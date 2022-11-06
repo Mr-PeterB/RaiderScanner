@@ -1,5 +1,4 @@
-![dcb22d8b57fdcbd8e64a7e2d091315ff.png](:/e9af083ecd454a5d8fd1e692cd71b4e2)
-
+![image](https://user-images.githubusercontent.com/83140947/200195818-5d7b369a-0173-417d-abd8-553115a0c877.png)
 # Raider Scanner v2.0
 
 ## Installation:
@@ -9,3 +8,7 @@ sudo ln -s $(pwd)/RaiderScanner/raider /usr/local/bin/
 ```
 ***
 ## Usage:
+[+] Usage: ./raider [host file]
+
+EXAMPLE:
+./raider Desktop/hosts.txt
