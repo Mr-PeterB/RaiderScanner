@@ -132,15 +132,15 @@ elif [ -z "$ports" ];then
                 ports=`awk '/ open / && /tcp/ {print $1}' $host/tcp/bypass_firewall1.txt | awk -F "/" '{printf "%s,",$1}' | sed 's/.$//'`
                 echo -e "\n--------------------------------------------------------------\n"
                 if [ -z "$ports" ];then
-                        nmap -vv -p- -Pn f $host -oN $host/tcp/bypass_firewall2.txt
+                        nmap -vv -p- -Pn -f $host -oN $host/tcp/bypass_firewall2.txt
                         ports=`awk '/ open / && /tcp/ {print $1}' $host/tcp/bypass_firewall2.txt | awk -F "/" '{printf "%s,",$1}' | sed 's/.$//'`
                         echo -e "\n--------------------------------------------------------------\n"
                         if [ -z "$ports" ];then
-                                nmap -vv -p- -Pn -D RND:10  $host -oN $host/tcp/bypass_firewall3.txt
+                                nmap -vv -p- -Pn --script firewall-bypass $host -oN $host/tcp/bypass_firewall3.txt
                                 ports=`awk '/ open / && /tcp/ {print $1}' $host/tcp/bypass_firewall3.txt | awk -F "/" '{printf "%s,",$1}' | sed 's/.$//'`
                                 echo -e "\n--------------------------------------------------------------\n"
                                 if [ -z "$ports" ];then
-                                        nmap -vv -p- -Pn --script firewall-bypass $host -oN $host/tcp/bypass_firewall4.txt
+                                        nmap -vv -p- -Pn -D RND:10 $host -oN $host/tcp/bypass_firewall4.txt
                                         ports=`awk '/ open / && /tcp/ {print $1}' $host/tcp/bypass_firewall4.txt | awk -F "/" '{printf "%s,",$1}' | sed 's/.$//'`
                                         echo -e "\n--------------------------------------------------------------\n"
                                         if [ -z "$ports" ];then

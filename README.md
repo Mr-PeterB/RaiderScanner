@@ -1,2 +1,1 @@
-# RaiderScanner
- v2.0
+# RaiderScanner v2.0
