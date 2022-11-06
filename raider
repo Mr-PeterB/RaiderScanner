@@ -57,14 +57,14 @@ echo -e "
 "
 
 mkdir -p $host/tcp
-nmap -vv -p- --open $host -oN $host/tcp/all_tcp_ports.txt
+nmap -vv -p- --open -oN $host/tcp/all_tcp_ports.txt $host
 ports=`awk '/ open / && /tcp/ {print $1}' $host/tcp/all_tcp_ports.txt | awk -F "/" '{printf "%s,",$1}' | sed 's/.$//'`
 
 if [ -n "$ports" ];then
 
-        nmap -sV -Pn -p$ports $host -oN $host/tcp/full_tcp.txt
-        nmap -A -p$ports $host -oN $host/tcp/aggr_tcp.txt
-        nmap --script vuln -p$ports $host -oN $host/tcp/nmap_vuln.txt
+        nmap -sV -Pn -p$ports -oN $host/tcp/full_tcp.txt $host
+        nmap -A -p$ports -oN $host/tcp/aggr_tcp.txt $host
+        nmap --script vuln -p$ports -oN $host/tcp/nmap_vuln.txt $host
 
 fi
 
@@ -92,15 +92,15 @@ do
 echo -e "
 \n---------------------------------------------$host--------------------------------------------------------\n
 "
-nmap -vv -p- -Pn -sS --open $host -oN $host/tcp/all_tcp_ports_deep.txt
+nmap -vv -p- -Pn -sS --open -oN $host/tcp/all_tcp_ports_deep.txt $host
 ports=`awk '/ open / && /tcp/ {print $1}' $host/tcp/all_tcp_ports_deep.txt | awk -F "/" '{printf "%s,",$1}' | sed 's/.$//'`
 old_ports=`awk '/ open / && /tcp/ {print $1}' $host/tcp/all_tcp_ports.txt | awk -F "/" '{printf "%s,",$1}' | sed 's/.$//'`
 
 if [ "$ports" != "$old_ports" ];then
 
-        nmap -sV -Pn -p$ports $host -oN $host/tcp/full_tcp_deep.txt
-        nmap -A -p$ports $host -oN $host/tcp/aggr_tcp_deep.txt
-        nmap --script vuln -p$ports $host -oN $host/tcp/nmap_vuln_deep.txt
+        nmap -sV -Pn -p$ports -oN $host/tcp/full_tcp_deep.txt $host
+        nmap -A -p$ports  -oN $host/tcp/aggr_tcp_deep.txt $host
+        nmap --script vuln -p$ports -oN $host/tcp/nmap_vuln_deep.txt $host
        
 
 
