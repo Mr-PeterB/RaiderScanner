@@ -246,6 +246,8 @@ echo -e "${blue}\n
 while read -r host
 do
 
+echo -e "${blue}---------------------------------------------$host--------------------------------------------------------\n${endc}"
+
 mkdir -p $host/udp
 
 nmap -vv -p- -sU $host -oN $host/udp/all_udp_ports.txt
