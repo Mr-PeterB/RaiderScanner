@@ -253,7 +253,7 @@ mkdir -p $host/udp
 nmap -vv -p- -sU $host -oN $host/udp/all_udp_ports.txt
 portsudp=`awk '/ open / && /udp/ {print $1}' $host/udp/all_udp_ports.txt | awk -F "/" '{printf "%s,",$1}' | sed 's/.$//'`
 
-if [ -z "$portsudp" ];then
+if [ -n "$portsudp" ];then
 
         nmap -sU -Pn -sV -p$portsudp $host -oN $host/udp/full_udp.txt
 
