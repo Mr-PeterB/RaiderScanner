@@ -1,39 +1,114 @@
 #!/bin/bash
 
-
+#colors
 red="\e[31m"
 blue="\e[34m"
-lred="\e[91m"
 black="\e[30m"
 cyan="\e[36m"
 white="\e[97m"
-lblue="\e[94m"
 pink="\e[95m"
 green="\e[32m"
+yellow="\e[33m"
 gray="\e[90m"
 endc="\e[0m"
 
 
-if [[ $EUID -ne 0 ]]; then
-'Please run this script as root.' 1>&2
-exit 1
-fi
+#light colors
+lred="\e[91m"
+lyellow="\e[93m"
+lgreen="\e[92m"
+lblue="\e[94m"
 
-file_path=$1
+#bold colors
+bred="\e[1m\e[31m"
 
-if [[ (-z  "$file_path") || ($@ == "--help") || ($@ == "-h")]];then
-       echo "[+] Usage: $0 [host file]
-        
-EXAMPLE:
-$0 ~/Desktop/hosts.txt
-        "
-        exit 1
-fi
+#underline colors
+uwhite="\e[4m\e[97m"
+ured="\e[4m\e[31m"
+ulred="\e[4m\e[91m"
+uyellow="\e[4m\e[33m"
+ublue="\e[4m\e[34m"
+ulyellow="\e[4m\e[93m"
+ugreen="\e[4m\e[32m"
+ulgreen="\e[4m\e[92m"
 
 
+#General Variables
+program_name=$0
+hosts_flag=0
+tcp_flag=0
+udp_flag=0
+restore_flag=0
+exit_flag=0
 all_down=true
 
-if [ -f "$file_path" ]; then
+help () {
+
+echo -e "
+USAGE:
+
+        raider [options]
+
+OPTIONS:
+        -f, --file      The file with hosts
+        -t, --tcp       Use tcp scans
+        -u, --udp       Use udp scans
+        -r, --restore   Restore the previous session
+        -h, --help      Help Menu
+
+EXAMPLES:
+$program_name -r
+$program_name  -f hostses.txt -t
+$program_name -f hostes -t -u
+"
+exit 1
+}
+
+
+
+if [[ -z  $1 ]]
+then
+        help
+fi
+
+flags () {
+    while [ $# -gt 0 ]
+    do
+        case "$1" in
+        -f|--file)
+            hosts_flag=1
+            hosts_file=$2
+            shift
+            shift
+            ;;
+        -t|--tcp)
+            tcp_flag=1
+            shift
+            ;;
+        -u|--udp)
+            udp_flag=1
+            shift
+            ;;
+        -r|--restore)
+            restore_flag=1
+            shift
+            ;;  
+        -h|--help|*)
+            help
+            ;;
+        "")
+          help
+          ;;   
+        esac
+
+
+    done
+}  
+
+
+
+version () {
+
 echo -e "${blue}
 ██████╗  █████╗ ██╗██████╗ ███████╗██████╗     ███████╗ ██████╗ █████╗ ███╗   ██╗███╗   ██╗███████╗██████╗ 
 ██╔══██╗██╔══██╗██║██╔══██╗██╔════╝██╔══██╗    ██╔════╝██╔════╝██╔══██╗████╗  ██║████╗  ██║██╔════╝██╔══██╗
@@ -41,11 +116,12 @@ echo -e "${blue}
 ██╔══██╗██╔══██║██║██║  ██║██╔══╝  ██╔══██╗    ╚════██║██║     ██╔══██║██║╚██╗██║██║╚██╗██║██╔══╝  ██╔══██╗
 ██║  ██║██║  ██║██║██████╔╝███████╗██║  ██║    ███████║╚██████╗██║  ██║██║ ╚████║██║ ╚████║███████╗██║  ██║
 ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝    ╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝${fcyan}
-                                                                                       ____    ___  
-                                                                                __   _|___ \  / _ \ 
-                                                                                \ \ / / __) || | | |
-                                                                                 \ V / / __/ | |_| |
-                                                                                  \_/ |_____(_)___/ 
+                                                                                         ____    _ 
+                                                                                  __   _|___ \  / |
+                                                                                  \ \ / / __) | | |
+                                                                                   \ V / / __/ _| |
+                                                                                    \_/ |_____(_)_|
+                   
 ${red}                                                                                                                                                  
                                                                                                  
                                         ⠀⠀⠀⠀⠀⠀⠀⣠⣤⡀⠀⠀⢀⣤⣀⠀⠀⠀⠀⠀⠀⠀
@@ -63,165 +139,165 @@ ${red}
                                         ⠀⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⠀
                                         ⠀⠘⣿⣿⣿⣿⣿⡟⠀⠈⣿⣿⠁⠀⣿⣿⣿⣿⣿⡿⠁⠀
                                         ⠀⠀⠈⠻⠿⠿⠟⠁⠀⠀⠹⠏⠀⠀⠈⠻⠿⠿⠟⠁⠀⠀
-"
+${endc}"
+sleep 2
+# ANSI Shadow
+# https://patorjk.com/software/taag/#p=display&h=2&v=3&f=Standard&t=v2.1
+}
+
+
+
+
+
+
+tcp_scan () {
+
+if [ $hosts_file = ".restore_tcp_raider" ]
+then
+        backup_file=".restore_tcp_raider2"
+else
+        backup_file=".restore_tcp_raider"
+fi
+echo $backup_file
+echo -e "\n\n"
+cat $hosts_file > $backup_file
+
+while read -r host
+do
+        echo -e "${blue}\n---------------------------------------------$host--------------------------------------------------------\n${endc}"
+        mkdir -p $host/tcp
+        
+        nmap -vv -p- --open -oA $host/tcp/all_tcp_ports $host
+        
+        ports=`awk '/ open / && /tcp/ {print $1}' $host/tcp/all_tcp_ports.nmap | awk -F "/" '{printf "%s,",$1}' | sed 's/.$//'`
+
+        if [ -n "$ports" ];then
+
+                all_down=false
+                nmap -sV -Pn -p$ports -oA $host/tcp/full_tcp_scan $host
+                nmap -A -p$ports -oA $host/tcp/aggressive_tcp_scan $host
+                nmap --script vuln -Pn -p$ports -oA $host/tcp/script_vuln $host
+
+                #add all the nmaps you want!!
+        fi
+
+        grep -v "$host" $backup_file > .tmp 
+        cat .tmp > $backup_file
+        rm .tmp
+
+done < $hosts_file
+
+rm $backup_file
+
+}
+
+udp_scan () {
+
+if [ $hosts_file = ".restore_udp_raider" ]
+then
+        backup_file=".restore_udp_raider2"
+else
+        backup_file=".restore_udp_raider"
+fi
 
 echo -e "\n\n"
+cat $hosts_file > $backup_file
 
 while read -r host
 do
-echo -e "${blue}\n---------------------------------------------$host--------------------------------------------------------\n${endc}"
+        echo -e "${blue}\n---------------------------------------------$host--------------------------------------------------------\n${endc}"
+        mkdir -p $host/udp
 
-mkdir -p $host/tcp
-nmap -vv -p- --open -oN $host/tcp/all_tcp_ports.txt $host
-ports=`awk '/ open / && /tcp/ {print $1}' $host/tcp/all_tcp_ports.txt | awk -F "/" '{printf "%s,",$1}' | sed 's/.$//'`
+        nmap -vv -p- -sU $host -oA $host/udp/all_udp_ports
+        portsudp=`awk '/ open / && /udp/ {print $1}' $host/udp/all_udp_ports.nmap | awk -F "/" '{printf "%s,",$1}' | sed 's/.$//'`
 
-if [ -n "$ports" ];then
+        if [ -n "$portsudp" ];then
 
-        all_down=false
-        nmap -sV -Pn -p$ports -oN $host/tcp/full_tcp.txt $host
-        nmap -A -p$ports -oN $host/tcp/aggr_tcp.txt $host
-        nmap --script vuln -p$ports -oN $host/tcp/nmap_vuln.txt $host
+                all_down=false
+                nmap -sU -Pn -sV -p$portsudp $host -oA $host/udp/full_udp
+
+                #add all the nmaps you want!!
+        fi
+
+
+        grep -v "$host" $backup_file > .tmp 
+        cat .tmp > $backup_file
+        rm .tmp
+
+done < $hosts_file
+
+rm $backup_file
+
+}
 
 
 
+
+
+#main()
+
+if [[ $EUID -ne 0 ]]; then
+        echo -e "${red}Please run this script as root." 1>&2
+        exit 1
 fi
 
-done < $file_path
+
+version
+
+flags "$@"
+
+if [ "$hosts_flag" != 0 ]
+then
+        if [ -f "$hosts_file" ]
+        then
 
 
+                if [ "$tcp_flag" != 0 ]
+                then
+                        tcp_scan
+                fi
 
+                if [ "$udp_flag" != 0 ]
+                then
+                        udp_flag
+                fi
 
+        else
+                echo -e "${red}\nThe file \"$hosts_file\" does not exist."
 
-
-
-echo -e "${blue}\n
-                ██████╗ ███████╗███████╗██████╗     ███████╗ ██████╗ █████╗ ███╗   ██╗
-                ██╔══██╗██╔════╝██╔════╝██╔══██╗    ██╔════╝██╔════╝██╔══██╗████╗  ██║
-                ██║  ██║█████╗  █████╗  ██████╔╝    ███████╗██║     ███████║██╔██╗ ██║
-                ██║  ██║██╔══╝  ██╔══╝  ██╔═══╝     ╚════██║██║     ██╔══██║██║╚██╗██║
-                ██████╔╝███████╗███████╗██║         ███████║╚██████╗██║  ██║██║ ╚████║
-                ╚═════╝ ╚══════╝╚══════╝╚═╝         ╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═══╝                                                                     
-"
-
-
-while read -r host
-do
-echo -e "${blue}---------------------------------------------$host--------------------------------------------------------\n${endc}"
-nmap -vv -p- -Pn -sS --open -oN $host/tcp/all_tcp_ports_deep.txt $host
-ports=`awk '/ open / && /tcp/ {print $1}' $host/tcp/all_tcp_ports_deep.txt | awk -F "/" '{printf "%s,",$1}' | sed 's/.$//'`
-old_ports=`awk '/ open / && /tcp/ {print $1}' $host/tcp/all_tcp_ports.txt | awk -F "/" '{printf "%s,",$1}' | sed 's/.$//'`
-
-if [ "$ports" != "$old_ports" ];then
-
-        all_down=false
-        nmap -sV -Pn -p$ports -oN $host/tcp/full_tcp_deep.txt $host
-        nmap -A -p$ports  -oN $host/tcp/aggr_tcp_deep.txt $host
-        nmap --script vuln -p$ports -oN $host/tcp/nmap_vuln_deep.txt $host
-       
-
-
-
-elif [ -z "$ports" ];then
-
-
-        nmap -n -sn -PE $host -oN $host/ping.txt
-        pin=`awk '/Host is up/ ' $host/ping.txt`
-        if [ -n "$pin" ] ; then
-
-                echo -e "${blue}
- :::::::: ::::::::::: ::::::::::     :::     :::    ::::::::::: :::    ::: 
-:+:    :+:    :+:     :+:          :+: :+:   :+:        :+:     :+:    :+: 
-+:+           +:+     +:+         +:+   +:+  +:+        +:+     +:+    +:+ 
-+#++:++#++    +#+     +#++:++#   +#++:++#++: +#+        +#+     +#++:++#++ 
-       +#+    +#+     +#+        +#+     +#+ +#+        +#+     +#+    +#+ 
-#+#    #+#    #+#     #+#        #+#     #+# #+#        #+#     #+#    #+# 
- ########     ###     ########## ###     ### ########## ###     ###    ### 
-::::    ::::   ::::::::  :::::::::  ::::::::::                             
-+:+:+: :+:+:+ :+:    :+: :+:    :+: :+:                                    
-+:+ +:+:+ +:+ +:+    +:+ +:+    +:+ +:+                                    
-+#+  +:+  +#+ +#+    +:+ +#+    +:+ +#++:++#                               
-+#+       +#+ +#+    +#+ +#+    +#+ +#+                                    
-#+#       #+# #+#    #+# #+#    #+# #+#                                    
-###       ###  ########  #########  ##########   ${endc}                            
-                "
-                nmap -vv -p- -sM -Pn $host -oN $host/tcp/bypass_firewall1.txt
-
-                ports=`awk '/ open / && /tcp/ {print $1}' $host/tcp/bypass_firewall1.txt | awk -F "/" '{printf "%s,",$1}' | sed 's/.$//'`
-                echo -e "\n${red}-------------------------------------------------------------------------------------------------------------------\n"
-                if [ -z "$ports" ];then
-                        nmap -vv -p- -Pn -f $host -oN $host/tcp/bypass_firewall2.txt
-                        ports=`awk '/ open / && /tcp/ {print $1}' $host/tcp/bypass_firewall2.txt | awk -F "/" '{printf "%s,",$1}' | sed 's/.$//'`
-                        echo -e "\n${red}-------------------------------------------------------------------------------------------------------------------\n"
-                        if [ -z "$ports" ];then
-                                nmap -vv -p- -Pn --script firewall-bypass $host -oN $host/tcp/bypass_firewall3.txt
-                                ports=`awk '/ open / && /tcp/ {print $1}' $host/tcp/bypass_firewall3.txt | awk -F "/" '{printf "%s,",$1}' | sed 's/.$//'`
-                                echo -e "\n${red}-------------------------------------------------------------------------------------------------------------------\n"
-                                if [ -z "$ports" ];then
-                                        nmap -vv -p- -Pn -D RND:10 $host -oN $host/tcp/bypass_firewall4.txt
-                                        ports=`awk '/ open / && /tcp/ {print $1}' $host/tcp/bypass_firewall4.txt | awk -F "/" '{printf "%s,",$1}' | sed 's/.$//'`
-                                        echo -e "\n${red}-------------------------------------------------------------------------------------------------------------------\n"
-                                        if [ -z "$ports" ];then
-                                                        echo -e "${red}                                                           
-@@@      @@@@@@@@  @@@  @@@  @@@  @@@@@@@@     @@@  @@@  @@@@@@@   
-@@@     @@@@@@@@@  @@@  @@@  @@@  @@@@@@@@     @@@  @@@  @@@@@@@@  
-@@!     !@@        @@!  @@!  @@@  @@!          @@!  @@@  @@!  @@@  
-!@!     !@!        !@!  !@!  @!@  !@!          !@!  @!@  !@!  @!@  
-!!@     !@! @!@!@  !!@  @!@  !@!  @!!!:!       @!@  !@!  @!@@!@!   
-!!!     !!! !!@!!  !!!  !@!  !!!  !!!!!:       !@!  !!!  !!@!!!    
-!!:     :!!   !!:  !!:  :!:  !!:  !!:          !!:  !!!  !!:       
-:!:     :!:   !::  :!:   ::!!:!   :!:          :!:  !:!  :!:       
- ::      ::: ::::   ::    ::::     :: ::::     ::::: ::   ::       
-:        :: :: :   :       :      : :: ::       : :  :    :        
-                                          ${endc}                         
-                                        "
-
-                                        else
-                                                all_down=false
-                                                nmap -sV -Pn -p$ports $host -oN $host/tcp/full_tcp_bypass4.txt
-                                                nmap -A -p$ports $host -oN $host/tcp/aggr_tcp_bypass4.txt
-                                                nmap --script vuln -p$ports $host -oN $host/tcp/nmap_vuln_bypass4.txt
-                                        fi
-
-
-
-                                else
-                                        all_down=false
-                                        nmap -sV -Pn -p$ports $host -oN $host/tcp/full_tcp_bypass3.txt
-                                        nmap -A -p$ports $host -oN $host/tcp/aggr_tcp_bypass3.txt
-                                        nmap --script vuln -p$ports $host -oN $host/tcp/nmap_vuln_bypass3.txt
-                                fi
-
-                        else
-                                all_down=false
-                                nmap -sV -Pn -p$ports $host -oN $host/tcp/full_tcp_bypass2.txt
-                                nmap -A -p$ports $host -oN $host/tcp/aggr_tcp_bypass2.txt
-                                nmap --script vuln -p$ports $host -oN $host/tcp/nmap_vuln_bypass2.txt
-                        fi
-
+        fi
+elif [ "$restore_flag" != 0 ]
+then
+        if [ -f ".restore_tcp_raider" ]
+        then
+                if [ -n ".restore_tcp_raider" ]
+                then
+                        hosts_file=".restore_tcp_raider"
+                        tcp_scan
                 else
-                        all_down=false
-                        nmap -sV -Pn -p$ports $host -oN $host/tcp/full_tcp_bypass1.txt
-                        nmap -A -p$ports $host -oN $host/tcp/aggr_tcp_bypass1.txt
-                        nmap --script vuln -p$ports $host -oN $host/tcp/nmap_vuln_bypass1.txt
+                        echo -e "${red}\nThe tcp restore file is empty.${endc}"
                 fi
         else
-                echo -e "${red}                                                                     
-                ██╗  ██╗ ██████╗ ███████╗████████╗    ██████╗  ██████╗ ██╗    ██╗███╗   ██╗
-                ██║  ██║██╔═══██╗██╔════╝╚══██╔══╝    ██╔══██╗██╔═══██╗██║    ██║████╗  ██║
-                ███████║██║   ██║███████╗   ██║       ██║  ██║██║   ██║██║ █╗ ██║██╔██╗ ██║
-                ██╔══██║██║   ██║╚════██║   ██║       ██║  ██║██║   ██║██║███╗██║██║╚██╗██║
-                ██║  ██║╚██████╔╝███████║   ██║       ██████╔╝╚██████╔╝╚███╔███╔╝██║ ╚████║
-                ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝       ╚═════╝  ╚═════╝  ╚══╝╚══╝ ╚═╝  ╚═══╝${endc}  
-                "
+                echo -e "${red}\nThe tcp restore file does not exist.${endc}"
         fi
+
+        if [ -f ".restore_udp_raider" ]
+        then
+                if [ -n ".restore_udp_raider" ]
+                then
+                        hosts_file=".restore_udp_raider"
+                        udp_scan
+                else
+                        echo -e "${red}\nThe udp restore file is empty.${endc}"
+                fi
+        else
+                echo -e "${red}\nThe udp restore file does not exist.${endc}"
+        fi
+
 else
-
-        all_down=false
-
+        help
 fi
 
-
-done < $file_path
 
 
 if $all_down ; then
@@ -232,34 +308,6 @@ if $all_down ; then
 -------------------------------------------------------------------------------------------------------------------"
         exit 0
 fi
-
-echo -e "${blue}\n
-
-                ██╗   ██╗██████╗ ██████╗     ███╗   ███╗ ██████╗ ██████╗ ███████╗
-                ██║   ██║██╔══██╗██╔══██╗    ████╗ ████║██╔═══██╗██╔══██╗██╔════╝
-                ██║   ██║██║  ██║██████╔╝    ██╔████╔██║██║   ██║██║  ██║█████╗  
-                ██║   ██║██║  ██║██╔═══╝     ██║╚██╔╝██║██║   ██║██║  ██║██╔══╝  
-                ╚██████╔╝██████╔╝██║         ██║ ╚═╝ ██║╚██████╔╝██████╔╝███████╗
-                 ╚═════╝ ╚═════╝ ╚═╝         ╚═╝     ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝${endc}                                                                 
-"
-
-while read -r host
-do
-
-echo -e "${blue}---------------------------------------------$host--------------------------------------------------------\n${endc}"
-
-mkdir -p $host/udp
-
-nmap -vv -p- -sU $host -oN $host/udp/all_udp_ports.txt
-portsudp=`awk '/ open / && /udp/ {print $1}' $host/udp/all_udp_ports.txt | awk -F "/" '{printf "%s,",$1}' | sed 's/.$//'`
-
-if [ -n "$portsudp" ];then
-
-        nmap -sU -Pn -sV -p$portsudp $host -oN $host/udp/full_udp.txt
-
-fi
-
-done < $file_path
 
 
 echo -e "\n\n${green}
@@ -272,15 +320,9 @@ echo -e "\n\n${green}
                 ╚═╝     ╚═╝╚═╝  ╚═══╝╚═╝╚══════╝╚═╝  ╚═╝╚══════╝╚═════╝ ╚═╝╚═╝
 "
 
-
-else 
-    echo -e "\n${red}The file \"$file_path\" does not exist.${endc}"
-fi
-
    
+
 #Banners Info
 # https://manytools.org/hacker-tools/ascii-banner/
-# ANSI Shadow
-# https://patorjk.com/software/taag/#p=display&h=2&v=3&f=Standard&t=v2.0
 #Colors
 #https://dev.to/ifenna__/adding-colors-to-bash-scripts-48g4
