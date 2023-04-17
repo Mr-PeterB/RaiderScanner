@@ -12,11 +12,7 @@ sudo ln -s $(pwd)/RaiderScanner/raider /usr/local/bin/
 ***
 ## Usage:
 ```
-raider [hosts file]
-
-USAGE:
-
-        raider [options]
+raider [options]
 
 OPTIONS:
         -f, --file      The file with hosts
