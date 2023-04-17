@@ -1,0 +1,18 @@
+#!/bin/bash
+
+hosts_file=$1
+
+whiler read -r hosts
+do
+	name=${hosts/\//_}
+	mkdir $name
+	nmap -vv -n -sn -PE -oA $name/livehosts_1_$name $hosts
+	nmap -vv -n -sn -PO -oA $name/livehosts_2_$name $hosts
+	nmap -vv -n -sn -PP -oA $name/livehosts_3_$name $hosts
+	grep "Up" $name/livehosts_1.gnmap| awk '{print$ 2}' >> $name/tmp
+	grep "Up" $name/livehosts_2.gnmap| awk '{print$ 2}' >> $name/tmp
+	grep "Up" $name/livehosts_3.gnmap| awk '{print$ 2}' >> $name/tmp
+
+	cat $name/tmp | sort -u >> $name/all_live_hosts_$name.txt
+	cat $name/all_live_hosts_$name.txt >> all_live_hosts.txt
+done < $hosts_file
