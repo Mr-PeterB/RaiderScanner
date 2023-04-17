@@ -1,6 +1,6 @@
 ![image](https://user-images.githubusercontent.com/83140947/200195818-5d7b369a-0173-417d-abd8-553115a0c877.png)
 
-# Raider Scanner v2.0
+# Raider Scanner v2.1
 ## Description
 A simple tool for Pentesters that combines and runs nmap scans.
 ***
