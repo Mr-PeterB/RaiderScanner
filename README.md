@@ -11,6 +11,7 @@ sudo ln -s $(pwd)/RaiderScanner/raider /usr/local/bin/
 ```
 ***
 ## Usage:
+```
 raider [hosts file]
 
 USAGE:
@@ -28,3 +29,4 @@ EXAMPLES:
 raider -r
 raider  -f [hosts file] -t
 raider -f [hosts file] -t -u
+```
