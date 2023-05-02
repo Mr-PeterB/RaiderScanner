@@ -16,5 +16,8 @@ do
 	cat $name/tmp | sort -u >> $name/all_live_hosts_$name.txt
 	rm $name/tmp
 	cat $name/all_live_hosts_$name.txt >> all_live_hosts.txt
-	aliive=`wc -l < all_live_hosts`
+	cat all_live_hosts.txt | sort -u > .tmp
+	cat .tmp > all_live_hosts.txt
+	rm .tmp
+	aliive=`wc -l < all_live_hosts.txt`
 done < $hosts_file
