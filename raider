@@ -209,13 +209,13 @@ do
         echo -e "${blue}\n---------------------------------------------$host--------------------------------------------------------\n${endc}"
         mkdir -p $host/udp
 
-        nmap -vv -p- -sU $host -oA $host/udp/all_udp_ports
+        nmap -vv -p- -sU -Pn T5 $host -oA $host/udp/all_udp_ports
         portsudp=`awk '/ open / && /udp/ {print $1}' $host/udp/all_udp_ports.nmap | awk -F "/" '{printf "%s,",$1}' | sed 's/.$//'`
 
         if [ -n "$portsudp" ];then
 
                 all_down=false
-                nmap -sU -Pn -sV -T5 -p$portsudp $host -oA $host/udp/full_udp
+                nmap -sU -Pn -p$portsudp $host -oA $host/udp/full_udp
 
                 #add all the nmaps you want!!
         fi
