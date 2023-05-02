@@ -167,7 +167,7 @@ do
         echo -e "${blue}\n---------------------------------------------$host--------------------------------------------------------\n${endc}"
         mkdir -p $host/tcp
         
-        nmap -vv -p- --open -oA $host/tcp/all_tcp_ports $host
+        nmap -vv -p- -sS --open -oA $host/tcp/all_tcp_ports $host
         
         ports=`awk '/ open / && /tcp/ {print $1}' $host/tcp/all_tcp_ports.nmap | awk -F "/" '{printf "%s,",$1}' | sed 's/.$//'`
 
@@ -175,13 +175,14 @@ do
 
                 all_down=false
                 nmap -sV -Pn -p$ports -oA $host/tcp/full_tcp_scan $host
-                nmap -A -p$ports -oA $host/tcp/aggressive_tcp_scan $host
-                nmap --script vuln -Pn -p$ports -oA $host/tcp/script_vuln $host
+                nmap -p$ports -Pn --script "(default or vuln or version or external or discovery) and safe" -oA $host/tcp/safe_scripts $host
+                #nmap -A -p$ports -oA $host/tcp/aggressive_tcp_scan $host
+                #nmap --script vuln -Pn -p$ports -oA $host/tcp/script_vuln $host
 
                 #add all the nmaps you want!!
         fi
 
-        grep -v "$host" $backup_file > .tmp 
+        grep -vw "$host" $backup_file > .tmp 
         cat .tmp > $backup_file
         rm .tmp
 
@@ -214,13 +215,13 @@ do
         if [ -n "$portsudp" ];then
 
                 all_down=false
-                nmap -sU -Pn -sV -p$portsudp $host -oA $host/udp/full_udp
+                nmap -sU -Pn -sV -T5 -p$portsudp $host -oA $host/udp/full_udp
 
                 #add all the nmaps you want!!
         fi
 
 
-        grep -v "$host" $backup_file > .tmp 
+        grep -vw "$host" $backup_file > .tmp 
         cat .tmp > $backup_file
         rm .tmp
 
