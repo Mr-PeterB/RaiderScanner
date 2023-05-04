@@ -9,9 +9,12 @@ do
 	nmap -vv -n -sn -PE -oA $name/livehosts_1_$name $hosts
 	nmap -vv -n -sn -PO -oA $name/livehosts_2_$name $hosts
 	nmap -vv -n -sn -PP -oA $name/livehosts_3_$name $hosts
+	nmap -vv -n -sn -Pn -oA $name/livehosts_4_$name $hosts
+	
 	grep "Up" $name/livehosts_1_$name.gnmap| awk '{print$ 2}' >> $name/tmp
 	grep "Up" $name/livehosts_2_$name.gnmap| awk '{print$ 2}' >> $name/tmp
 	grep "Up" $name/livehosts_3_$name.gnmap| awk '{print$ 2}' >> $name/tmp
+	grep "Up" $name/livehosts_4_$name.gnmap| awk '{print$ 2}' >> $name/tmp
 
 	cat $name/tmp | sort -u >> $name/all_live_hosts_$name.txt
 	rm $name/tmp
