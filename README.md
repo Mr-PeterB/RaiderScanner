@@ -12,17 +12,27 @@ sudo ln -s $(pwd)/RaiderScanner/raider /usr/local/bin/
 ***
 ## Usage:
 ```
-raider [options]
+USAGE:
+
+        raider [options]
 
 OPTIONS:
-        -f, --file      The file with hosts
+        Host Discovery:
+        -d, --discovery Find alive hosts on several subnets.
+                        (Read a text file with the subnets in it
+                         Format: 10.0.1.0/24
+                                 192.168.1.0/24
+                                 10.11.55.0/24)
+        Port Scanning:
+        -f, --file      The file with hosts (one by one in line)
         -t, --tcp       Use tcp scans
         -u, --udp       Use udp scans
         -r, --restore   Restore the previous session
         -h, --help      Help Menu
 
 EXAMPLES:
+raider -d subnets.txt
 raider -r
-raider  -f [hosts file] -t
-raider -f [hosts file] -t -u
+raider  -f hostses.txt -t
+raider -f hostes -t -u
 ```
