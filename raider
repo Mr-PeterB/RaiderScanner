@@ -50,13 +50,21 @@ USAGE:
         raider [options]
 
 OPTIONS:
-        -f, --file      The file with hosts
+        Host Discovery:
+        -d, --discovery Find alive hosts on several subnets.
+                        (Read a text file with the subnets in it
+                         Format: 10.0.1.0/24
+                                 192.168.1.0/24
+                                 10.11.55.0/24)
+        Port Scanning:
+        -f, --file      The file with hosts (one by one in line)
         -t, --tcp       Use tcp scans
         -u, --udp       Use udp scans
         -r, --restore   Restore the previous session
         -h, --help      Help Menu
 
 EXAMPLES:
+$program_name -d subnets.txt
 $program_name -r
 $program_name  -f hostses.txt -t
 $program_name -f hostes -t -u
@@ -75,6 +83,12 @@ flags () {
     while [ $# -gt 0 ]
     do
         case "$1" in
+        -d|--discovery)
+            disc_flag=1
+            disc_file=$2
+            shift
+            shift
+            ;;
         -f|--file)
             hosts_flag=1
             hosts_file=$2
@@ -116,11 +130,11 @@ echo -e "${blue}
 ██╔══██╗██╔══██║██║██║  ██║██╔══╝  ██╔══██╗    ╚════██║██║     ██╔══██║██║╚██╗██║██║╚██╗██║██╔══╝  ██╔══██╗
 ██║  ██║██║  ██║██║██████╔╝███████╗██║  ██║    ███████║╚██████╗██║  ██║██║ ╚████║██║ ╚████║███████╗██║  ██║
 ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝    ╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝${fcyan}
-                                                                                         ____    _ 
-                                                                                  __   _|___ \  / |
-                                                                                  \ \ / / __) | | |
-                                                                                   \ V / / __/ _| |
-                                                                                    \_/ |_____(_)_|
+                                                                                                ____    ____  
+                                                                                         __   _|___ \  |___ \ 
+                                                                                         \ \ / / __) |   __) |
+                                                                                          \ V / / __/ _ / __/ 
+                                                                                           \_/ |_____(_)_____|
                    
 ${red}                                                                                                                                                  
                                                                                                  
@@ -142,13 +156,43 @@ ${red}
 ${endc}"
 sleep 2
 # ANSI Shadow
-# https://patorjk.com/software/taag/#p=display&h=2&v=3&f=Standard&t=v2.1
+# https://patorjk.com/software/taag/#p=display&h=2&v=3&f=Standard&t=v2.2
 }
 
 
 
 
+DeadOrAlive () {
 
+while read -r subs
+do
+        echo -e "\n----- Scanning subnet $subs -----\n"
+
+        name=${subs/\//_}
+        mkdir $name
+        nmap -n -sn -PE -oA $name/livehosts_1_$name $subs 
+        nmap -n -sn -PO -oA $name/livehosts_2_$name $subs 
+        nmap -n -sn -PP -oA $name/livehosts_3_$name $subs
+        
+        grep "Up" $name/livehosts_1_$name.gnmap| awk '{print$ 2}' >> $name/tmp
+        grep "Up" $name/livehosts_2_$name.gnmap| awk '{print$ 2}' >> $name/tmp
+        grep "Up" $name/livehosts_3_$name.gnmap| awk '{print$ 2}' >> $name/tmp
+
+        cat $name/tmp | sort -u >> $name/all_live_hosts_$name.txt
+        rm $name/tmp
+        cat $name/all_live_hosts_$name.txt >> all_live_hosts.txt
+        cat all_live_hosts.txt | sort -u > .tmp
+        cat .tmp > all_live_hosts.txt
+        rm .tmp
+        alive=`wc -l < $name/all_live_hosts_$name.txt`
+        echo -e "\n${blue}[*]${endc} Alive hosts: ${red}$alive${endc} (file: \"$name/all_live_hosts_$name.txt\")"
+done < $disc_file
+
+alive=`wc -l < all_live_hosts.txt`
+
+echo -e "\n${green}[+]${endc} Total alive hosts: ${red}$alive${endc} (file: \"all_live_hosts.txt\")"
+
+}
 
 tcp_scan () {
 
@@ -175,6 +219,7 @@ do
 
                 all_down=false
                 nmap -sV -Pn -p$ports -oA $host/tcp/full_tcp_scan $host
+                nmap -p$ports -Pn --script "(default or vuln or version) and safe" -oA $host/tcp/safe_scripts $host
                 #nmap -p$ports -Pn --script "(default or vuln or version or external or discovery) and safe" -oA $host/tcp/safe_scripts $host
                 #nmap -A -p$ports -oA $host/tcp/aggressive_tcp_scan $host
                 #nmap --script "(vuln and safe)" -Pn -p$ports -oA $host/tcp/script_vuln $host
@@ -246,6 +291,18 @@ fi
 version
 
 flags "$@"
+
+if [ "$disc_flag" != 0 ]
+then
+        if [ -f "$disc_file" ]
+        then
+                DeadOrAlive
+                exit 0
+        else
+                 echo -e "${red}\nThe file \"$disc_file\" does not exist."
+        fi
+fi
+
 
 if [ "$hosts_flag" != 0 ]
 then
@@ -319,7 +376,7 @@ echo -e "\n\n${green}
                 ██╔══╝  ██║██║╚██╗██║██║╚════██║██╔══██║██╔══╝  ██║  ██║╚═╝╚═╝
                 ██║     ██║██║ ╚████║██║███████║██║  ██║███████╗██████╔╝██╗██╗
                 ╚═╝     ╚═╝╚═╝  ╚═══╝╚═╝╚══════╝╚═╝  ╚═╝╚══════╝╚═════╝ ╚═╝╚═╝${endc}
-a"
+"
 
    
 
