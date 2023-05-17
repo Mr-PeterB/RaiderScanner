@@ -130,14 +130,12 @@ echo -e "${blue}
 ██╔══██╗██╔══██║██║██║  ██║██╔══╝  ██╔══██╗    ╚════██║██║     ██╔══██║██║╚██╗██║██║╚██╗██║██╔══╝  ██╔══██╗
 ██║  ██║██║  ██║██║██████╔╝███████╗██║  ██║    ███████║╚██████╗██║  ██║██║ ╚████║██║ ╚████║███████╗██║  ██║
 ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝    ╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝${fcyan}
-                                                                                                ____    ____  
-                                                                                         __   _|___ \  |___ \ 
-                                                                                         \ \ / / __) |   __) |
-                                                                                          \ V / / __/ _ / __/ 
-                                                                                           \_/ |_____(_)_____|
-                   
-${red}                                                                                                                                                  
-                                                                                                 
+                                                                                        ____    _____ 
+                                                                                 __   _|___ \  |___ / 
+                                                                                 \ \ / / __) |   |_ \ 
+                                                                                  \ V / / __/ _ ___) |
+                                                                                   \_/ |_____(_)____/                  
+${red}                                                                                                                                                                                                                                                   
                                         ⠀⠀⠀⠀⠀⠀⠀⣠⣤⡀⠀⠀⢀⣤⣀⠀⠀⠀⠀⠀⠀⠀
                                         ⠀⠀⠀⠀⠀⣠⣾⣿⡿⠁⠀⠀⠈⢿⣿⣷⣄⠀⠀⠀⠀⠀
                                         ⠀⠀⠀⢠⣾⣿⣿⡿⠀⠀⠀⠀⠀⠈⣿⣿⣿⣧⡀⠀⠀⠀
@@ -156,7 +154,7 @@ ${red}
 ${endc}"
 sleep 2
 # ANSI Shadow
-# https://patorjk.com/software/taag/#p=display&h=2&v=3&f=Standard&t=v2.2
+# https://patorjk.com/software/taag/#p=display&h=2&v=3&f=Standard&t=v2.3
 }
 
 
@@ -166,31 +164,33 @@ DeadOrAlive () {
 
 while read -r subs
 do
-        echo -e "\n----- Scanning subnet $subs -----\n"
+        echo -e "\n${lblue}-------- Scanning subnet $subs ----------${endc}\n"
 
         name=${subs/\//_}
         mkdir $name
         nmap -n -sn -PE -oA $name/livehosts_1_$name $subs 
         nmap -n -sn -PO -oA $name/livehosts_2_$name $subs 
         nmap -n -sn -PP -oA $name/livehosts_3_$name $subs
-        
+        fping -agq $subs | tee -a $name/fping_results_$name.txt
+
         grep "Up" $name/livehosts_1_$name.gnmap| awk '{print$ 2}' >> $name/tmp
         grep "Up" $name/livehosts_2_$name.gnmap| awk '{print$ 2}' >> $name/tmp
         grep "Up" $name/livehosts_3_$name.gnmap| awk '{print$ 2}' >> $name/tmp
+        cat $name/fping_results_$name.txt >> $name/tmp
 
-        cat $name/tmp | sort -u >> $name/all_live_hosts_$name.txt
+        cat $name/tmp | sort -u > $name/all_live_hosts_$name.txt
         rm $name/tmp
         cat $name/all_live_hosts_$name.txt >> all_live_hosts.txt
         cat all_live_hosts.txt | sort -u > .tmp
         cat .tmp > all_live_hosts.txt
         rm .tmp
         alive=`wc -l < $name/all_live_hosts_$name.txt`
-        echo -e "\n${blue}[*]${endc} Alive hosts: ${red}$alive${endc} (file: \"$name/all_live_hosts_$name.txt\")"
+        echo -e "\n${green}[+]${endc} Alive hosts: ${green}$alive${endc} (file: \"$name/all_live_hosts_$name.txt\")"
 done < $disc_file
 
 alive=`wc -l < all_live_hosts.txt`
 
-echo -e "\n${green}[+]${endc} Total alive hosts: ${red}$alive${endc} (file: \"all_live_hosts.txt\")"
+echo -e "\n${lblue}[*] Total alive hosts: $alive (file: \"all_live_hosts.txt\")${endc}"
 
 }
 
