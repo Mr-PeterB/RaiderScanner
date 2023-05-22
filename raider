@@ -130,11 +130,11 @@ echo -e "${blue}
 ██╔══██╗██╔══██║██║██║  ██║██╔══╝  ██╔══██╗    ╚════██║██║     ██╔══██║██║╚██╗██║██║╚██╗██║██╔══╝  ██╔══██╗
 ██║  ██║██║  ██║██║██████╔╝███████╗██║  ██║    ███████║╚██████╗██║  ██║██║ ╚████║██║ ╚████║███████╗██║  ██║
 ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝    ╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝${fcyan}
-                                                                                        ____    _____ 
-                                                                                 __   _|___ \  |___ / 
-                                                                                 \ \ / / __) |   |_ \ 
-                                                                                  \ V / / __/ _ ___) |
-                                                                                   \_/ |_____(_)____/                  
+                                                                                                ____   _  _   
+                                                                                         __   _|___ \ | || |  
+                                                                                         \ \ / / __) || || |_ 
+                                                                                          \ V / / __/ |__   _|
+                                                                                           \_/ |_____(_) |_|                    
 ${red}                                                                                                                                                                                                                                                   
                                         ⠀⠀⠀⠀⠀⠀⠀⣠⣤⡀⠀⠀⢀⣤⣀⠀⠀⠀⠀⠀⠀⠀
                                         ⠀⠀⠀⠀⠀⣠⣾⣿⡿⠁⠀⠀⠈⢿⣿⣷⣄⠀⠀⠀⠀⠀
@@ -154,7 +154,7 @@ ${red}
 ${endc}"
 sleep 2
 # ANSI Shadow
-# https://patorjk.com/software/taag/#p=display&h=2&v=3&f=Standard&t=v2.3
+# https://patorjk.com/software/taag/#p=display&h=2&v=3&f=Standard&t=v2.4
 }
 
 
@@ -294,17 +294,18 @@ flags "$@"
 
 if [ "$disc_flag" != 0 ]
 then
-        if [ -f "$disc_file" ]
+        if [ "$disc_flag" != 0 ]
         then
-                DeadOrAlive
-                exit 0
-        else
-                 echo -e "${red}\nThe file \"$disc_file\" does not exist."
+                if [ -f "$disc_file" ]
+                then
+                        DeadOrAlive
+                        exit 0
+                else
+                         echo -e "${red}\nThe file \"$disc_file\" does not exist."
+                fi
         fi
-fi
 
-
-if [ "$hosts_flag" != 0 ]
+elif [ "$hosts_flag" != 0 ]
 then
         if [ -f "$hosts_file" ]
         then
