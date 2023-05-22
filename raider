@@ -36,6 +36,7 @@ ulgreen="\e[4m\e[92m"
 #General Variables
 program_name=$0
 hosts_flag=0
+disc_flag=0
 tcp_flag=0
 udp_flag=0
 restore_flag=0
