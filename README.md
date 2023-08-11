@@ -36,3 +36,36 @@ raider -r
 raider  -f hostses.txt -t
 raider -f hostes -t -u
 ```
+***
+## For Host Discovery
+We write into a .txt file the subnets we want to scan for alive hosts:
+```
+$ cat subnets.txt
+192.168.1.0/24
+10.6.15.0/24
+10.1.0.0/16
+10.6.6.0/26
+```
+And then run the command
+```
+$ sudo ./raider -d subnets.txt
+```
+Results:
+```
+$ ls
+192.168.1.0_24
+10.6.15.0_24
+10.1.0.0_16
+10.6.6.0_26
+all_live_hosts.txt
+```
+The "all_live_hosts.txt" contains the alive hosts from all the subnets.
+## For tcp scan:
+We can use the following command for the previous file to perform tcp scan to all live hosts:
+```
+sudo ./raider -f all_live_hosts.txt -t
+```
+## For tcp and udp:
+```
+sudo ./raider -f all_live_hosts.txt -t -u
+```
