@@ -107,36 +107,37 @@ flags () {
         -r|--restore)
             restore_flag=1
             shift
-            ;;  
+            ;;
         -h|--help|*)
             help
             ;;
         "")
           help
-          ;;   
+          ;;
         esac
 
 
     done
-}  
+}
 
 
 
 version () {
 
 echo -e "${blue}
-██████╗  █████╗ ██╗██████╗ ███████╗██████╗     ███████╗ ██████╗ █████╗ ███╗   ██╗███╗   ██╗███████╗██████╗ 
+██████╗  █████╗ ██╗██████╗ ███████╗██████╗     ███████╗ ██████╗ █████╗ ███╗   ██╗███╗   ██╗███████╗██████╗
 ██╔══██╗██╔══██╗██║██╔══██╗██╔════╝██╔══██╗    ██╔════╝██╔════╝██╔══██╗████╗  ██║████╗  ██║██╔════╝██╔══██╗
 ██████╔╝███████║██║██║  ██║█████╗  ██████╔╝    ███████╗██║     ███████║██╔██╗ ██║██╔██╗ ██║█████╗  ██████╔╝
 ██╔══██╗██╔══██║██║██║  ██║██╔══╝  ██╔══██╗    ╚════██║██║     ██╔══██║██║╚██╗██║██║╚██╗██║██╔══╝  ██╔══██╗
 ██║  ██║██║  ██║██║██████╔╝███████╗██║  ██║    ███████║╚██████╗██║  ██║██║ ╚████║██║ ╚████║███████╗██║  ██║
 ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝    ╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝${fcyan}
-                                                                                                ____   _  _   
-                                                                                         __   _|___ \ | || |  
-                                                                                         \ \ / / __) || || |_ 
-                                                                                          \ V / / __/ |__   _|
-                                                                                           \_/ |_____(_) |_|                    
-${red}                                                                                                                                                                                                                                                   
+                                                                                               ____    ____  
+                                                                                        __   _|___ \  | ___| 
+                                                                                        \ \ / / __) | |___ \ 
+                                                                                         \ V / / __/ _ ___) |
+                                                                                          \_/ |_____(_)____/ 
+${red}
+
                                         ⠀⠀⠀⠀⠀⠀⠀⣠⣤⡀⠀⠀⢀⣤⣀⠀⠀⠀⠀⠀⠀⠀
                                         ⠀⠀⠀⠀⠀⣠⣾⣿⡿⠁⠀⠀⠈⢿⣿⣷⣄⠀⠀⠀⠀⠀
                                         ⠀⠀⠀⢠⣾⣿⣿⡿⠀⠀⠀⠀⠀⠈⣿⣿⣿⣧⡀⠀⠀⠀
@@ -155,7 +156,7 @@ ${red}
 ${endc}"
 sleep 2
 # ANSI Shadow
-# https://patorjk.com/software/taag/#p=display&h=2&v=3&f=Standard&t=v2.4
+# https://patorjk.com/software/taag/#p=display&h=2&v=3&f=Standard&t=v2.5
 }
 
 
@@ -169,8 +170,8 @@ do
 
         name=${subs/\//_}
         mkdir $name
-        nmap -n -sn -PE -oA $name/livehosts_1_$name $subs 
-        nmap -n -sn -PO -oA $name/livehosts_2_$name $subs 
+        nmap -n -sn -PE -oA $name/livehosts_1_$name $subs
+        nmap -n -sn -PO -oA $name/livehosts_2_$name $subs
         nmap -n -sn -PP -oA $name/livehosts_3_$name $subs
         fping -agq $subs | tee -a $name/fping_results_$name.txt
 
@@ -191,7 +192,7 @@ done < $disc_file
 
 alive=`wc -l < all_live_hosts.txt`
 
-echo -e "\n${lblue}[*] Total alive hosts: $alive (file: \"all_live_hosts.txt\")${endc}"
+echo -e "\n${lblue}[*] ${endc}Total alive hosts: $alive (file: \"all_live_hosts.txt\")"
 
 }
 
@@ -203,17 +204,19 @@ then
 else
         backup_file=".restore_tcp_raider"
 fi
-echo $backup_file
-echo -e "\n\n"
+
+echo -e "${lblue}[*] ${endc}Using file = $hosts_file"
+echo -e "${lblue}[*] ${endc}Backup file = $backup_file"
+echo -e "\n"
 cat $hosts_file > $backup_file
 
 while read -r host
 do
         echo -e "${blue}\n---------------------------------------------$host--------------------------------------------------------\n${endc}"
         mkdir -p $host/tcp
-        
-        nmap -vv -p- -sT -Pn --open -oA $host/tcp/all_tcp_ports $host
-        
+
+        nmap -vv -p- -sT -Pn -n --open --defeat-rst-ratelimit --max-retries 3 --host-timeout 90m -oA $host/tcp/all_tcp_ports $host
+
         ports=`awk '/ open / && /tcp/ {print $1}' $host/tcp/all_tcp_ports.nmap | awk -F "/" '{printf "%s,",$1}' | sed 's/.$//'`
 
         if [ -n "$ports" ];then
@@ -228,13 +231,13 @@ do
                 #add all the nmaps you want!!
         fi
 
-        grep -vw "$host" $backup_file > .tmp 
+        grep -vw "$host" $backup_file > .tmp
         cat .tmp > $backup_file
         rm .tmp
 
 done < $hosts_file
 
-rm $backup_file
+rm .restore_tcp_raider .restore_tcp_raider2 2>/dev/null
 
 }
 
@@ -247,7 +250,9 @@ else
         backup_file=".restore_udp_raider"
 fi
 
-echo -e "\n\n"
+echo -e "${lblue}[*] ${endc}Using file = $hosts_file"
+echo -e "${lblue}[*] ${endc}Backup file = $backup_file"
+echo -e "\n"
 cat $hosts_file > $backup_file
 
 while read -r host
@@ -255,7 +260,7 @@ do
         echo -e "${blue}\n---------------------------------------------$host--------------------------------------------------------\n${endc}"
         mkdir -p $host/udp
 
-        nmap -sUV -Pn --top-ports 1000 --open --max-retries 3 $host -oA $host/udp/top1000_udp_ports
+        nmap -sUV -Pn --top-ports 1000 --open --defeat-icmp-ratelimit --defeat-rst-ratelimit --max-retries 3 $host -oA $host/udp/top1000_udp_ports
         #portsudp=`awk '/ open / && /udp/ {print $1}' $host/udp/all_udp_ports.nmap | awk -F "/" '{printf "%s,",$1}' | sed 's/.$//'`
 
         #if [ -n "$portsudp" ];then
@@ -267,13 +272,13 @@ do
         #fi
 
 
-        grep -vw "$host" $backup_file > .tmp 
+        grep -vw "$host" $backup_file > .tmp
         cat .tmp > $backup_file
         rm .tmp
 
 done < $hosts_file
 
-rm $backup_file
+rm .restore_udp_raider .restore_udp_raider2 2>/dev/null
 
 }
 
@@ -284,7 +289,7 @@ rm $backup_file
 #main()
 
 if [[ $EUID -ne 0 ]]; then
-        echo -e "${red}Please run this script as root." 1>&2
+        echo -e "${red}[-] ${endc}Please run this script as root." 1>&2
         exit 1
 fi
 
@@ -302,7 +307,7 @@ then
                         DeadOrAlive
                         exit 0
                 else
-                         echo -e "${red}\nThe file \"$disc_file\" does not exist."
+                         echo -e "\n${red}[-] ${endc}The file \"$disc_file\" does not exist."
                 fi
         fi
 
@@ -319,39 +324,63 @@ then
 
                 if [ "$udp_flag" != 0 ]
                 then
-                        udp_flag
+                        udp_scan
                 fi
 
         else
-                echo -e "${red}\nThe file \"$hosts_file\" does not exist."
+                echo -e "\n${red}[-] ${endc}The file \"$hosts_file\" does not exist."
 
         fi
 elif [ "$restore_flag" != 0 ]
 then
-        if [ -f ".restore_tcp_raider" ]
+        #tcp
+        if [ -f ".restore_tcp_raider2" ]
         then
-                if [ -n ".restore_tcp_raider" ]
+                if [ -f ".restore_tcp_raider" ]
                 then
-                        hosts_file=".restore_tcp_raider"
-                        tcp_scan
+                        if [ `cat .restore_tcp_raider | wc -l` -gt `cat .restore_tcp_raider2 | wc -l` ]
+                        then
+                                hosts_file=".restore_tcp_raider2"
+                                tcp_scan
+                        else
+                                hosts_file=".restore_tcp_raider"
+                                tcp_scan
+                        fi
                 else
-                        echo -e "${red}\nThe tcp restore file is empty.${endc}"
+                        hosts_file=".restore_tcp_raider2"
+                        tcp_scan                     
                 fi
+        elif [ -f ".restore_tcp_raider" ]
+        then
+                hosts_file=".restore_tcp_raider"
+                tcp_scan
         else
-                echo -e "${red}\nThe tcp restore file does not exist.${endc}"
+                echo -e "\n${red}[-] ${endc}The tcp restore file does not exist."
         fi
 
-        if [ -f ".restore_udp_raider" ]
+        #udp
+        if [ -f ".restore_udp_raider2" ]
         then
-                if [ -n ".restore_udp_raider" ]
+                if [ -f ".restore_udp_raider" ]
                 then
-                        hosts_file=".restore_udp_raider"
-                        udp_scan
+                        if [ `cat .restore_udp_raider | wc -l` -gt `cat .restore_udp_raider2 | wc -l` ]
+                        then
+                                hosts_file=".restore_udp_raider2"
+                                udp_scan
+                        else
+                                hosts_file=".restore_udp_raider"
+                                udp_scan
+                        fi
                 else
-                        echo -e "${red}\nThe udp restore file is empty.${endc}"
+                        hosts_file=".restore_udp_raider2"
+                        udp_scan                     
                 fi
+        elif [ -f ".restore_udp_raider" ]
+        then
+                hosts_file=".restore_udp_raider"
+                udp_scan
         else
-                echo -e "${red}\nThe udp restore file does not exist.${endc}"
+                echo -e "\n${red}[-] ${endc}The udp restore file does not exist."
         fi
 
 else
@@ -380,7 +409,7 @@ echo -e "\n\n${green}
                 ╚═╝     ╚═╝╚═╝  ╚═══╝╚═╝╚══════╝╚═╝  ╚═╝╚══════╝╚═════╝ ╚═╝╚═╝${endc}
 "
 
-   
+
 
 #Banners Info
 # https://manytools.org/hacker-tools/ascii-banner/
