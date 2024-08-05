@@ -1,13 +1,15 @@
 ![image](https://user-images.githubusercontent.com/83140947/200195818-5d7b369a-0173-417d-abd8-553115a0c877.png)
 
-# Raider Scanner v2.4
+# Raider Scanner v2.5
 ## Description
 A simple tool for Pentesters that combines and runs nmap scans.
 ***
 ## Installation:
-```
-git clone https://github.com/Mr-PeterB/RaiderScanner.git
-sudo ln -s $(pwd)/RaiderScanner/raider /usr/local/bin/
+
+Set up ssh keys for your github account [here](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent?platform=linux)
+```bash
+git clone git@github.com:twelvesec/raider.git
+sudo ln -s $(pwd)/raider/raider /usr/local/bin/
 ```
 ***
 ## Usage:
@@ -47,8 +49,8 @@ $ cat subnets.txt
 10.6.6.0/26
 ```
 And then run the command
-```
-$ sudo ./raider -d subnets.txt
+```bash
+sudo ./raider -d subnets.txt
 ```
 Results:
 ```
@@ -62,10 +64,16 @@ all_live_hosts.txt
 The "all_live_hosts.txt" contains the alive hosts from all the subnets.
 ## For tcp scan:
 We can use the following command for the previous file to perform tcp scan to all live hosts:
-```
+```bash
 sudo ./raider -f all_live_hosts.txt -t
 ```
 ## For tcp and udp:
-```
+```bash
 sudo ./raider -f all_live_hosts.txt -t -u
+```
+## Extra Tip
+**If you have subnets into scope then you can run** 
+with root
+```bash
+./raider -d subnets.txt; ./raider -f all_live_hosts.txt -t -u
 ```
