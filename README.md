@@ -6,10 +6,9 @@ A simple tool for Pentesters that combines and runs nmap scans.
 ***
 ## Installation:
 
-Set up ssh keys for your github account [here](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent?platform=linux)
 ```bash
-git clone git@github.com:twelvesec/raider.git
-sudo ln -s $(pwd)/raider/raider /usr/local/bin/
+git clone git@github.com:Mr-PeterB/RaiderScanner.git
+sudo ln -s $(pwd)/RaiderScanner/raider /usr/local/bin/
 ```
 ***
 ## Usage:
