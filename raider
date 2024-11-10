@@ -69,7 +69,7 @@ OPTIONS:
 EXAMPLES:
 $program_name -d subnets.txt
 $program_name -r
-$program_name  -f hostses.txt -t
+$program_name -f hostses.txt -t
 $program_name -f hostes -t -u
 "
 exit 1
