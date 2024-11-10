@@ -71,7 +71,7 @@ sudo ./raider -f all_live_hosts.txt -t
 sudo ./raider -f all_live_hosts.txt -t -u
 ```
 ## Extra Tip
-**If you have subnets into scope then you can run** 
+**If you have subnets into scope then you can run with root** 
 ```bash
-sudo ./raider -d subnets.txt; ./raider -f all_live_hosts.txt -t -u
+./raider -d subnets.txt; ./raider -f all_live_hosts.txt -t -u
 ```
