@@ -1,6 +1,6 @@
 ![image](https://user-images.githubusercontent.com/83140947/200195818-5d7b369a-0173-417d-abd8-553115a0c877.png)
 
-# Raider Scanner v2.5
+# Raider Scanner v2.6
 ## Description
 A simple tool for Pentesters that combines and runs nmap scans.
 ***
@@ -72,7 +72,6 @@ sudo ./raider -f all_live_hosts.txt -t -u
 ```
 ## Extra Tip
 **If you have subnets into scope then you can run** 
-with root
 ```bash
-./raider -d subnets.txt; ./raider -f all_live_hosts.txt -t -u
+sudo ./raider -d subnets.txt; ./raider -f all_live_hosts.txt -t -u
 ```
