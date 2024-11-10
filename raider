@@ -42,6 +42,7 @@ udp_flag=0
 restore_flag=0
 exit_flag=0
 all_down=true
+total_ports=""
 
 help () {
 
@@ -131,13 +132,13 @@ echo -e "${blue}
 ██╔══██╗██╔══██║██║██║  ██║██╔══╝  ██╔══██╗    ╚════██║██║     ██╔══██║██║╚██╗██║██║╚██╗██║██╔══╝  ██╔══██╗
 ██║  ██║██║  ██║██║██████╔╝███████╗██║  ██║    ███████║╚██████╗██║  ██║██║ ╚████║██║ ╚████║███████╗██║  ██║
 ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝    ╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝${fcyan}
-                                                                                               ____    ____  
-                                                                                        __   _|___ \  | ___| 
-                                                                                        \ \ / / __) | |___ \ 
-                                                                                         \ V / / __/ _ ___) |
-                                                                                          \_/ |_____(_)____/ 
+                                                                                                ____    __   
+                                                                                         __   _|___ \  / /_  
+                                                                                         \ \ / / __) || '_ \ 
+                                                                                          \ V / / __/ | (_) |
+                                                                                           \_/ |_____(_)___/ 
+                     
 ${red}
-
                                         ⠀⠀⠀⠀⠀⠀⠀⣠⣤⡀⠀⠀⢀⣤⣀⠀⠀⠀⠀⠀⠀⠀
                                         ⠀⠀⠀⠀⠀⣠⣾⣿⡿⠁⠀⠀⠈⢿⣿⣷⣄⠀⠀⠀⠀⠀
                                         ⠀⠀⠀⢠⣾⣿⣿⡿⠀⠀⠀⠀⠀⠈⣿⣿⣿⣧⡀⠀⠀⠀
@@ -156,7 +157,7 @@ ${red}
 ${endc}"
 sleep 2
 # ANSI Shadow
-# https://patorjk.com/software/taag/#p=display&h=2&v=3&f=Standard&t=v2.5
+# https://patorjk.com/software/taag/#p=display&h=2&v=3&f=Standard&t=v2.6
 }
 
 
@@ -170,14 +171,22 @@ do
 
         name=${subs/\//_}
         mkdir $name
-        nmap -n -sn -PE -oA $name/livehosts_1_$name $subs
+        nmap -n -PR -PS80,443 -PA3389 -PU53,161,123 -oA $name/livehosts_1_$name $subs
         nmap -n -sn -PO -oA $name/livehosts_2_$name $subs
         nmap -n -sn -PP -oA $name/livehosts_3_$name $subs
+        nmap -n -sn -PM -oA $name/livehosts_4_$name $subs
+        nmap -n -sn -PE -oA $name/livehosts_5_$name $subs
+        nmap -n -sn -PU -oA $name/livehosts_6_$name $subs
         fping -agq $subs | tee -a $name/fping_results_$name.txt
 
         grep "Up" $name/livehosts_1_$name.gnmap| awk '{print$ 2}' >> $name/tmp
         grep "Up" $name/livehosts_2_$name.gnmap| awk '{print$ 2}' >> $name/tmp
         grep "Up" $name/livehosts_3_$name.gnmap| awk '{print$ 2}' >> $name/tmp
+        grep "Up" $name/livehosts_4_$name.gnmap| awk '{print$ 2}' >> $name/tmp
+        grep "Up" $name/livehosts_5_$name.gnmap| awk '{print$ 2}' >> $name/tmp
+        grep "Up" $name/livehosts_6_$name.gnmap| awk '{print$ 2}' >> $name/tmp
+
+
         cat $name/fping_results_$name.txt >> $name/tmp
 
         cat $name/tmp | sort -u > $name/all_live_hosts_$name.txt
@@ -215,7 +224,7 @@ do
         echo -e "${blue}\n---------------------------------------------$host--------------------------------------------------------\n${endc}"
         mkdir -p $host/tcp
 
-        nmap -vv -p- -sT -Pn -n --open --defeat-rst-ratelimit --max-retries 3 --host-timeout 90m -oA $host/tcp/all_tcp_ports $host
+        nmap -vv -p- -sS -Pn -n --open --defeat-rst-ratelimit --max-retries 3 --host-timeout 90m -oA $host/tcp/all_tcp_ports $host
 
         ports=`awk '/ open / && /tcp/ {print $1}' $host/tcp/all_tcp_ports.nmap | awk -F "/" '{printf "%s,",$1}' | sed 's/.$//'`
 
@@ -229,19 +238,42 @@ do
                 #nmap --script "(vuln and safe)" -Pn -p$ports -oA $host/tcp/script_vuln $host
 
                 #add all the nmaps you want!!
+                awk '/ open / && /tcp/ {print $1}' $host/tcp/all_tcp_ports.nmap | awk -F "/" '{print $1}' >> .nessus_tcp_ports
+                echo -e $host >> .nessus_hosts
+        else
+                echo -e $host >> .no_open_tcp_ports
         fi
 
         grep -vw "$host" $backup_file > .tmp
         cat .tmp > $backup_file
         rm .tmp
 
+
+
 done < $hosts_file
 
-rm .restore_tcp_raider .restore_tcp_raider2 2>/dev/null
+
+nessus_ports=`cat .nessus_tcp_ports | sort -un | awk '{printf "%s,",$1}' | sed 's/.$//'`
+nessus_hosts=`cat .nessus_hosts | sort -u | awk '{printf "%s,",$1}' | sed 's/.$//'`
+no_open_tcp_ports=`cat .no_open_tcp_ports | sort -u | awk '{printf "%s,",$1}' | sed 's/.$//'`
+rm .restore_tcp_raider .restore_tcp_raider2 .nessus_tcp_ports .no_open_tcp_ports .nessus_hosts 2>/dev/null
+
+echo -e "\n\n${blue}
+------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------${endc}"
+
+echo -e "\n${blue}[*]${endc} TCP Hosts for nessus -> $nessus_hosts"
+echo -e "${blue}[*]${endc} TCP Ports for nessus -> $nessus_ports"
+echo -e "${red}[-]${endc} No open ports -> $no_open_tcp_ports\n"
+
+sleep 2
 
 }
 
 udp_scan () {
+
+echo -e "${cyan}\n-----------------------------------------------UDP Scan--------------------------------------------------------${endc}"
+
 
 if [ $hosts_file = ".restore_udp_raider" ]
 then
@@ -250,9 +282,8 @@ else
         backup_file=".restore_udp_raider"
 fi
 
-echo -e "${lblue}[*] ${endc}Using file = $hosts_file"
+echo -e "\n${lblue}[*] ${endc}Using file = $hosts_file"
 echo -e "${lblue}[*] ${endc}Backup file = $backup_file"
-echo -e "\n"
 cat $hosts_file > $backup_file
 
 while read -r host
@@ -260,7 +291,7 @@ do
         echo -e "${blue}\n---------------------------------------------$host--------------------------------------------------------\n${endc}"
         mkdir -p $host/udp
 
-        nmap -sUV -Pn --top-ports 1000 --open --defeat-icmp-ratelimit --defeat-rst-ratelimit --max-retries 3 $host -oA $host/udp/top1000_udp_ports
+        nmap -sUV -Pn --top-ports 1000 --open --defeat-icmp-ratelimit --defeat-rst-ratelimit --max-retries 2 $host -oA $host/udp/top1000_udp_ports
         #portsudp=`awk '/ open / && /udp/ {print $1}' $host/udp/all_udp_ports.nmap | awk -F "/" '{printf "%s,",$1}' | sed 's/.$//'`
 
         #if [ -n "$portsudp" ];then
@@ -275,10 +306,30 @@ do
         grep -vw "$host" $backup_file > .tmp
         cat .tmp > $backup_file
         rm .tmp
+        echo -e $host >> .nessus_udp_hosts
+        awk '/ open / && /udp/ {print $1}' $host/udp/all_udp_ports.nmap |  awk -F "/" '{print $1}' >> .nessus_udp_ports
 
 done < $hosts_file
 
-rm .restore_udp_raider .restore_udp_raider2 2>/dev/null
+nessus_udp_ports=`cat .nessus_udp_ports | sort -un | awk '{printf "%s,",$1}' | sed 's/.$//'`
+nessus_udp_hosts=`cat .nessus_udp_hosts | sort -u | awk '{printf "%s,",$1}' | sed 's/.$//'`
+
+rm .restore_udp_raider .restore_udp_raider2 .nessus_udp_ports .nessus_udp_hosts 2>/dev/null
+
+echo -e "\n\n${blue}
+------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------${endc}"
+
+
+if [ -n $nessus_udp_ports ]
+then
+        echo -e "\n${red}[-]${endc} No Open UDP Ports for nessus"
+        echo -e "${blue}[*]${endc} IPs Scanned -> $nessus_udp_hosts\n"
+       
+else
+        echo -e "\n${blue}[*]${endc} UDP Hosts for nessus -> $nessus_udp_hosts"
+        echo -e "${blue}[*]${endc} UDP Ports for nessus -> $nessus_udp_ports\n"
+fi
 
 }
 
@@ -319,11 +370,13 @@ then
 
                 if [ "$tcp_flag" != 0 ]
                 then
+                        rm .restore_tcp_raider .restore_tcp_raider2 2>/dev/null
                         tcp_scan
                 fi
 
                 if [ "$udp_flag" != 0 ]
                 then
+                        rm .restore_udp_raider .restore_udp_raider2 2>/dev/null
                         udp_scan
                 fi
 
@@ -390,7 +443,7 @@ fi
 
 
 if $all_down ; then
-        echo -e "${red}-------------------------------------------------------------------------------------------------------------------
+        echo -e "${red}
 -------------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------------------------
@@ -398,17 +451,12 @@ if $all_down ; then
         exit 0
 fi
 
+filtered_ports=`grep 'due to host timeout' */tcp/all_tcp_ports.nmap -h | awk '{printf "%s, ",$3}'  | sed 's/..$//'`
 
-echo -e "\n\n${green}
-
-                ███████╗██╗███╗   ██╗██╗███████╗██╗  ██╗███████╗██████╗ ██╗██╗
-                ██╔════╝██║████╗  ██║██║██╔════╝██║  ██║██╔════╝██╔══██╗██║██║
-                █████╗  ██║██╔██╗ ██║██║███████╗███████║█████╗  ██║  ██║██║██║
-                ██╔══╝  ██║██║╚██╗██║██║╚════██║██╔══██║██╔══╝  ██║  ██║╚═╝╚═╝
-                ██║     ██║██║ ╚████║██║███████║██║  ██║███████╗██████╔╝██╗██╗
-                ╚═╝     ╚═╝╚═╝  ╚═══╝╚═╝╚══════╝╚═╝  ╚═╝╚══════╝╚═════╝ ╚═╝╚═╝${endc}
-"
-
+if [[ -n $filtered_ports ]]
+then
+        echo -e "\n${red}[!]${endc} ${uwhite}Propably Firewall Blocking Us${endc} -> $filtered_ports\n\n"
+fi
 
 
 #Banners Info
