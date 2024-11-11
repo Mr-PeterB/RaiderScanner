@@ -172,7 +172,7 @@ do
 
         name=${subs/\//_}
         mkdir $name
-        nmap -n -PR -PS80,443 -PA3389 -PU53,161,123 -oA $name/livehosts_1_$name $subs
+        #nmap -n -PR -PS80,443 -PA3389 -PU53,161,123 -oA $name/livehosts_1_$name $subs
         nmap -n -sn -PO -oA $name/livehosts_2_$name $subs
         nmap -n -sn -PP -oA $name/livehosts_3_$name $subs
         nmap -n -sn -PM -oA $name/livehosts_4_$name $subs
@@ -180,7 +180,7 @@ do
         nmap -n -sn -PU -oA $name/livehosts_6_$name $subs
         fping -agq $subs | tee -a $name/fping_results_$name.txt
 
-        grep "Up" $name/livehosts_1_$name.gnmap| awk '{print$ 2}' >> $name/tmp
+        #grep "Up" $name/livehosts_1_$name.gnmap| awk '{print$ 2}' >> $name/tmp
         grep "Up" $name/livehosts_2_$name.gnmap| awk '{print$ 2}' >> $name/tmp
         grep "Up" $name/livehosts_3_$name.gnmap| awk '{print$ 2}' >> $name/tmp
         grep "Up" $name/livehosts_4_$name.gnmap| awk '{print$ 2}' >> $name/tmp
