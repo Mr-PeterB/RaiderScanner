@@ -36,6 +36,7 @@ ulgreen="\e[4m\e[92m"
 #General Variables
 program_name=$0
 hosts_flag=0
+ssh_flag=0
 disc_flag=0
 tcp_flag=0
 udp_flag=0
@@ -66,11 +67,18 @@ OPTIONS:
         -r, --restore   Restore the previous session
         -h, --help      Help Menu
 
+        SSH private key spray to hosts
+        -f, --file      The file with hosts (one by one in line)
+        -i, --identity  The private ssh identity file
+        --ssh [username]The username to use for authentication 
+
 EXAMPLES:
 $program_name -d subnets.txt
 $program_name -r
 $program_name -f hostses.txt -t
 $program_name -f hostes -t -u
+SSH:
+$program_name -f ssh_spray.txt --ssh root -i id_rsa
 "
 exit 1
 }
@@ -110,6 +118,17 @@ flags () {
             restore_flag=1
             shift
             ;;
+        -s|--ssh)
+            ssh_flag=1
+            ssh_username=$2
+            shift
+            shift
+            ;;
+        -i|--identity)
+           ssh_key=$2
+           shift
+           shift
+           ;;
         -h|--help|*)
             help
             ;;
@@ -133,11 +152,12 @@ echo -e "${blue}
 ██╔══██╗██╔══██║██║██║  ██║██╔══╝  ██╔══██╗    ╚════██║██║     ██╔══██║██║╚██╗██║██║╚██╗██║██╔══╝  ██╔══██╗
 ██║  ██║██║  ██║██║██████╔╝███████╗██║  ██║    ███████║╚██████╗██║  ██║██║ ╚████║██║ ╚████║███████╗██║  ██║
 ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝    ╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝${fcyan}
-                                                                                               ____   _____ 
-                                                                                        __   _|___ \ |___  |
-                                                                                        \ \ / / __) |   / / 
-                                                                                         \ V / / __/ _ / /  
-                                                                                          \_/ |_____(_)_/   
+                                                                                                ____    ___  
+                                                                                         __   _|___ \  ( _ ) 
+                                                                                         \ \ / / __) | / _ \ 
+                                                                                          \ V / / __/ | (_) |
+                                                                                           \_/ |_____(_)___/ 
+                       
                      
 ${red}
                                         ⠀⠀⠀⠀⠀⠀⠀⣠⣤⡀⠀⠀⢀⣤⣀⠀⠀⠀⠀⠀⠀⠀
@@ -158,7 +178,7 @@ ${red}
 ${endc}"
 sleep 2
 # ANSI Shadow
-# https://patorjk.com/software/taag/#p=display&h=2&v=3&f=Standard&t=v2.7
+# https://patorjk.com/software/taag/#p=display&h=2&v=3&f=Standard&t=v2.8
 }
 
 
@@ -358,6 +378,56 @@ secs_to_human() {
 
 
 
+
+ssh_check() {
+    # Start ssh-agent and export its environment
+        eval "$(ssh-agent -s)" >/dev/null
+
+    # Add SSH key to agent
+        ssh-add "$ssh_key"
+        if [ $? -ne 0 ]; then
+                echo -e "${red}[-]${endc} Failed to add SSH key. Check your passphrase."
+                ssh-agent -k >/dev/null
+                return 1
+        fi
+    # Loop through hosts and check SSH connectivity
+    for ip in $(cat $hosts_file); do
+        if [[ -z "$ip" ]]; then
+            continue
+        fi
+
+        port_ssh=$(echo $ip | awk -F ':' '{print $2}')
+        ip_ssh=$(echo $ip | awk -F ':' '{print $1}')
+
+        echo -e "\n${blue}[*]${endc} Trying $ip_ssh..."
+
+        if [[ -z "$port_ssh" ]]; then
+            ssh -o ConnectTimeout=2 -o BatchMode=yes -o StrictHostKeyChecking=no "$ssh_username@$ip_ssh" true
+        else
+            ssh -p $port_ssh -o ConnectTimeout=2 -o BatchMode=yes -o StrictHostKeyChecking=no "$ssh_username@$ip_ssh" true
+        fi
+
+        # Check if the SSH command succeeded
+        if [ $? -eq 0 ]; then
+            if [[ -z "$port_ssh" ]]; then
+                echo -e "${green}[+]${endc} SSH key works for $ip_ssh!"
+            else
+                echo -e "${green}[+]${endc} SSH key works for $ip_ssh on port $port_ssh!"
+            fi
+        else
+            if [[ -z "$port_ssh" ]]; then
+                echo -e "${red}[-]${endc} SSH key not working for $ip_ssh"
+            else
+                echo -e "${red}[-]${endc} SSH key not working for $ip_ssh on port $port_ssh"
+            fi
+        fi
+    done
+
+    # Kill the ssh-agent after use
+    ssh-agent -k >/dev/null
+}
+
+
 #main()
 start=$(date +%s)
 
@@ -382,6 +452,21 @@ then
                 else
                          echo -e "\n${red}[-] ${endc}The file \"$disc_file\" does not exist."
                 fi
+        fi
+
+elif [ "$ssh_flag" != 0 ]
+then
+        if [ -f "$hosts_file" ]
+        then
+                if [ -f "$ssh_key" ]
+                then
+                        ssh_check
+                        exit 0
+                else
+                        echo -e "\n${red}[-] ${endc}The file \"$ssh_key\" does not exist."
+                fi
+        else
+                echo -e "\n${red}[-] ${endc}The file \"$hosts_file\" does not exist."
         fi
 
 elif [ "$hosts_flag" != 0 ]
