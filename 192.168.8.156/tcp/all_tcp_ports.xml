@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///opt/homebrew/bin/../share/nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.95 scan initiated Sat Nov 30 17:56:23 2024 as: nmap -vv -p- -sS -Pn -n -&#45;open -&#45;defeat-rst-ratelimit -&#45;max-retries 3 -&#45;host-timeout 90m -oA 192.168.8.156/tcp/all_tcp_ports 192.168.8.156 -->
+<nmaprun scanner="nmap" args="nmap -vv -p- -sS -Pn -n -&#45;open -&#45;defeat-rst-ratelimit -&#45;max-retries 3 -&#45;host-timeout 90m -oA 192.168.8.156/tcp/all_tcp_ports 192.168.8.156" start="1732982183" startstr="Sat Nov 30 17:56:23 2024" version="7.95" xmloutputversion="1.05">
+<scaninfo type="syn" protocol="tcp" numservices="65535" services="1-65535"/>
+<verbose level="2"/>
+<debugging level="0"/>
+<taskbegin task="ARP Ping Scan" time="1732982183"/>
+<taskend task="ARP Ping Scan" time="1732982185" extrainfo="1 total hosts"/>
+<runstats><finished time="1732982185" timestr="Sat Nov 30 17:56:25 2024" summary="Nmap done at Sat Nov 30 17:56:25 2024; 1 IP address (0 hosts up) scanned in 1.46 seconds" elapsed="1.46" exit="success"/><hosts up="0" down="1" total="1"/>
+</runstats>
+</nmaprun>

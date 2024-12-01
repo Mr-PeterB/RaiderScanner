@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///opt/homebrew/bin/../share/nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.95 scan initiated Sat Nov 30 17:53:15 2024 as: nmap -sV -Pn -p80,443,8448,62111 -oA 192.168.8.124/tcp/full_tcp_scan 192.168.8.124 -->
+<nmaprun scanner="nmap" args="nmap -sV -Pn -p80,443,8448,62111 -oA 192.168.8.124/tcp/full_tcp_scan 192.168.8.124" start="1732981995" startstr="Sat Nov 30 17:53:15 2024" version="7.95" xmloutputversion="1.05">
+<scaninfo type="syn" protocol="tcp" numservices="4" services="80,443,8448,62111"/>
+<verbose level="0"/>
+<debugging level="0"/>
+<hosthint><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="192.168.8.124" addrtype="ipv4"/>
+<address addr="4C:BB:58:44:8C:E0" addrtype="mac" vendor="Chicony Electronics"/>
+<hostnames>
+</hostnames>
+</hosthint>
+<host starttime="1732981995" endtime="1732982008"><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="192.168.8.124" addrtype="ipv4"/>
+<address addr="4C:BB:58:44:8C:E0" addrtype="mac" vendor="Chicony Electronics"/>
+<hostnames>
+<hostname name="number8" type="PTR"/>
+</hostnames>
+<ports><port protocol="tcp" portid="80"><state state="open" reason="syn-ack" reason_ttl="64"/><service name="http" product="nginx" version="1.22.1" method="probed" conf="10"><cpe>cpe:/a:igor_sysoev:nginx:1.22.1</cpe></service></port>
+<port protocol="tcp" portid="443"><state state="open" reason="syn-ack" reason_ttl="64"/><service name="http" product="nginx" version="1.22.1" tunnel="ssl" method="probed" conf="10"><cpe>cpe:/a:igor_sysoev:nginx:1.22.1</cpe></service></port>
+<port protocol="tcp" portid="8448"><state state="open" reason="syn-ack" reason_ttl="64"/><service name="http" product="nginx" version="1.22.1" tunnel="ssl" method="probed" conf="10"><cpe>cpe:/a:igor_sysoev:nginx:1.22.1</cpe></service></port>
+<port protocol="tcp" portid="62111"><state state="open" reason="syn-ack" reason_ttl="64"/><service name="ssh" product="OpenSSH" version="9.2p1 Debian 2+deb12u3" extrainfo="protocol 2.0" ostype="Linux" method="probed" conf="10"><cpe>cpe:/a:openbsd:openssh:9.2p1</cpe><cpe>cpe:/o:linux:linux_kernel</cpe></service></port>
+</ports>
+<times srtt="31668" rttvar="42535" to="201808"/>
+</host>
+<runstats><finished time="1732982008" timestr="Sat Nov 30 17:53:28 2024" summary="Nmap done at Sat Nov 30 17:53:28 2024; 1 IP address (1 host up) scanned in 12.39 seconds" elapsed="12.39" exit="success"/><hosts up="1" down="0" total="1"/>
+</runstats>
+</nmaprun>

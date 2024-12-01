@@ -1,0 +1,4 @@
+# Nmap 7.95 scan initiated Sat Nov 30 17:53:15 2024 as: nmap -sV -Pn -p80,443,8448,62111 -oA 192.168.8.124/tcp/full_tcp_scan 192.168.8.124
+Host: 192.168.8.124 (number8)	Status: Up
+Host: 192.168.8.124 (number8)	Ports: 80/open/tcp//http//nginx 1.22.1/, 443/open/tcp//ssl|http//nginx 1.22.1/, 8448/open/tcp//ssl|http//nginx 1.22.1/, 62111/open/tcp//ssh//OpenSSH 9.2p1 Debian 2+deb12u3 (protocol 2.0)/
+# Nmap done at Sat Nov 30 17:53:28 2024 -- 1 IP address (1 host up) scanned in 12.39 seconds

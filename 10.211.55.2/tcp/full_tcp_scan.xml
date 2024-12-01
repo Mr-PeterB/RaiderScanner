@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///opt/homebrew/bin/../share/nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.95 scan initiated Sat Nov 30 17:40:56 2024 as: nmap -sV -Pn -p53,5000,7000,49311,49435,57621 -oA 10.211.55.2/tcp/full_tcp_scan 10.211.55.2 -->
+<nmaprun scanner="nmap" args="nmap -sV -Pn -p53,5000,7000,49311,49435,57621 -oA 10.211.55.2/tcp/full_tcp_scan 10.211.55.2" start="1732981256" startstr="Sat Nov 30 17:40:56 2024" version="7.95" xmloutputversion="1.05">
+<scaninfo type="syn" protocol="tcp" numservices="6" services="53,5000,7000,49311,49435,57621"/>
+<verbose level="0"/>
+<debugging level="0"/>
+<host starttime="1732981262" endtime="1732981426"><status state="up" reason="user-set" reason_ttl="0"/>
+<address addr="10.211.55.2" addrtype="ipv4"/>
+<hostnames>
+</hostnames>
+<ports><port protocol="tcp" portid="53"><state state="open" reason="syn-ack" reason_ttl="64"/><service name="domain" method="table" conf="3"/></port>
+<port protocol="tcp" portid="5000"><state state="open" reason="syn-ack" reason_ttl="64"/><service name="rtsp" servicefp="SF-Port5000-TCP:V=7.95%I=7%D=11/30%Time=674B3214%P=arm-apple-darwin23.4.0%r(GetRequest,8F,&quot;HTTP/1\.1\x20403\x20Forbidden\r\nContent-Length:\x200\r\nServer:\x20AirTunes/830\.10\.1\r\nX-Apple-ProcessingTime:\x202\r\nX-Apple-RequestReceivedTimestamp:\x2020617915\r\n\r\n&quot;)%r(RTSPRequest,8F,&quot;RTSP/1\.0\x20403\x20Forbidden\r\nContent-Length:\x200\r\nServer:\x20AirTunes/830\.10\.1\r\nX-Apple-ProcessingTime:\x203\r\nX-Apple-RequestReceivedTimestamp:\x2020617931\r\n\r\n&quot;)%r(HTTPOptions,8F,&quot;HTTP/1\.1\x20403\x20Forbidden\r\nContent-Length:\x200\r\nServer:\x20AirTunes/830\.10\.1\r\nX-Apple-ProcessingTime:\x203\r\nX-Apple-RequestReceivedTimestamp:\x2020622938\r\n\r\n&quot;)%r(FourOhFourRequest,8F,&quot;HTTP/1\.1\x20403\x20Forbidden\r\nContent-Length:\x200\r\nServer:\x20AirTunes/830\.10\.1\r\nX-Apple-ProcessingTime:\x204\r\nX-Apple-RequestReceivedTimestamp:\x2020622957\r\n\r\n&quot;)%r(SIPOptions,A1,&quot;RTSP/1\.0\x20403\x20Forbidden\r\nContent-Length:\x200\r\nServer:\x20AirTunes/830\.10\.1\r\nCSeq:\x2042\x20OPTIONS\r\nX-Apple-ProcessingTime:\x204\r\nX-Apple-RequestReceivedTimestamp:\x2020622976\r\n\r\n&quot;);" method="probed" conf="10"/></port>
+<port protocol="tcp" portid="7000"><state state="open" reason="syn-ack" reason_ttl="64"/><service name="rtsp" servicefp="SF-Port7000-TCP:V=7.95%I=7%D=11/30%Time=674B3219%P=arm-apple-darwin23.4.0%r(RTSPRequest,8F,&quot;RTSP/1\.0\x20403\x20Forbidden\r\nContent-Length:\x200\r\nServer:\x20AirTunes/830\.10\.1\r\nX-Apple-ProcessingTime:\x205\r\nX-Apple-RequestReceivedTimestamp:\x2020617906\r\n\r\n&quot;)%r(GetRequest,8F,&quot;HTTP/1\.1\x20403\x20Forbidden\r\nContent-Length:\x200\r\nServer:\x20AirTunes/830\.10\.1\r\nX-Apple-ProcessingTime:\x202\r\nX-Apple-RequestReceivedTimestamp:\x2020622942\r\n\r\n&quot;)%r(HTTPOptions,8F,&quot;HTTP/1\.1\x20403\x20Forbidden\r\nContent-Length:\x200\r\nServer:\x20AirTunes/830\.10\.1\r\nX-Apple-ProcessingTime:\x202\r\nX-Apple-RequestReceivedTimestamp:\x2020622962\r\n\r\n&quot;)%r(FourOhFourRequest,8F,&quot;HTTP/1\.1\x20403\x20Forbidden\r\nContent-Length:\x200\r\nServer:\x20AirTunes/830\.10\.1\r\nX-Apple-ProcessingTime:\x201\r\nX-Apple-RequestReceivedTimestamp:\x2020622982\r\n\r\n&quot;)%r(SIPOptions,A1,&quot;RTSP/1\.0\x20403\x20Forbidden\r\nContent-Length:\x200\r\nServer:\x20AirTunes/830\.10\.1\r\nCSeq:\x2042\x20OPTIONS\r\nX-Apple-ProcessingTime:\x204\r\nX-Apple-RequestReceivedTimestamp:\x2020622992\r\n\r\n&quot;);" method="probed" conf="10"/></port>
+<port protocol="tcp" portid="49311"><state state="open" reason="syn-ack" reason_ttl="64"/><service name="unknown" servicefp="SF-Port49311-TCP:V=7.95%I=7%D=11/30%Time=674B320E%P=arm-apple-darwin23.4.0%r(NULL,22,&quot;{\&quot;type\&quot;:\&quot;Tier1\&quot;,\&quot;version\&quot;:\&quot;1\.0\&quot;}\r\n&quot;);" method="table" conf="3"/></port>
+<port protocol="tcp" portid="49435"><state state="open" reason="syn-ack" reason_ttl="64"/></port>
+<port protocol="tcp" portid="57621"><state state="open" reason="syn-ack" reason_ttl="64"/></port>
+</ports>
+<times srtt="469" rttvar="1258" to="100000"/>
+</host>
+<runstats><finished time="1732981426" timestr="Sat Nov 30 17:43:46 2024" summary="Nmap done at Sat Nov 30 17:43:46 2024; 1 IP address (1 host up) scanned in 170.43 seconds" elapsed="170.43" exit="success"/><hosts up="1" down="0" total="1"/>
+</runstats>
+</nmaprun>

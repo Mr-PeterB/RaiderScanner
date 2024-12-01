@@ -40,11 +40,56 @@ ssh_flag=0
 disc_flag=0
 tcp_flag=0
 udp_flag=0
+port_scan=0
 restore_flag=0
+web_flag=0
 exit_flag=0
 all_down=true
 total_ports=""
 no_open_tcp_ports_flags=0
+
+#Distros vars
+nmap_version_no_http=(
+                        "ssh"
+                        "ftp"
+                        "sftp"
+                        "smtp"
+                        "telnet"
+                        "dns"
+                        "tftp"
+                        "kerberos-sec"
+                        "pop3"
+                        "rpcbind"
+                        "ident"
+                        "msrpc"
+                        "netbios-ssn"
+                        "microsoft-ds"
+                        "imap"
+                        "irc"
+                        "ldap"
+                        "modbus"
+                        "exec"
+                        "login"
+                        "rtsp"
+                        "rsync"
+                        "ms-sql-s"
+                        "oracle-tns"
+                        "mysql"
+                        "ms-wbt-server"
+                        "pgsql"
+                        )
+
+
+
+trap ctrl_c_handler SIGINT
+
+function ctrl_c_handler(){
+    rm .https_checks .http_checks .open_tcp_ports .open_tcp_ports2 .eyewitn_file 2>/dev/null
+    echo -e "${red}Exiting..${endc}"
+    exit 1
+
+}
+
 
 help () {
 
@@ -70,7 +115,7 @@ OPTIONS:
         SSH private key spray to hosts
         -f, --file      The file with hosts (one by one in line)
         -i, --identity  The private ssh identity file
-        --ssh [username]The username to use for authentication 
+        -s, --ssh [username]The username to use for authentication 
 
 EXAMPLES:
 $program_name -d subnets.txt
@@ -108,10 +153,12 @@ flags () {
             ;;
         -t|--tcp)
             tcp_flag=1
+            port_scan=1
             shift
             ;;
         -u|--udp)
             udp_flag=1
+            port_scan=1
             shift
             ;;
         -r|--restore)
@@ -127,6 +174,10 @@ flags () {
         -i|--identity)
            ssh_key=$2
            shift
+           shift
+           ;;
+        -w|--web)
+           web_flag=1
            shift
            ;;
         -h|--help|*)
@@ -152,13 +203,11 @@ echo -e "${blue}
 ██╔══██╗██╔══██║██║██║  ██║██╔══╝  ██╔══██╗    ╚════██║██║     ██╔══██║██║╚██╗██║██║╚██╗██║██╔══╝  ██╔══██╗
 ██║  ██║██║  ██║██║██████╔╝███████╗██║  ██║    ███████║╚██████╗██║  ██║██║ ╚████║██║ ╚████║███████╗██║  ██║
 ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝    ╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝${fcyan}
-                                                                                                ____    ___  
-                                                                                         __   _|___ \  ( _ ) 
-                                                                                         \ \ / / __) | / _ \ 
-                                                                                          \ V / / __/ | (_) |
-                                                                                           \_/ |_____(_)___/ 
-                       
-                     
+                                                                                                _____  ___  
+                                                                                         __   _|___ / / _ \ 
+                                                                                         \ \ / / |_ \| | | |
+                                                                                          \ V / ___) | |_| |
+                                                                                           \_/ |____(_)___/      
 ${red}
                                         ⠀⠀⠀⠀⠀⠀⠀⣠⣤⡀⠀⠀⢀⣤⣀⠀⠀⠀⠀⠀⠀⠀
                                         ⠀⠀⠀⠀⠀⣠⣾⣿⡿⠁⠀⠀⠈⢿⣿⣷⣄⠀⠀⠀⠀⠀
@@ -178,7 +227,7 @@ ${red}
 ${endc}"
 sleep 2
 # ANSI Shadow
-# https://patorjk.com/software/taag/#p=display&h=2&v=3&f=Standard&t=v2.8
+# https://patorjk.com/software/taag/#p=display&h=2&v=3&f=Standard&t=v3.0
 }
 
 
@@ -192,7 +241,7 @@ do
 
         name=${subs/\//_}
         mkdir $name
-        nmap -n -PR -PS80,443 -PA3389 -PU53,161,123 -oA $name/livehosts_1_$name $subs
+        #nmap -n -PR -PS80,443 -PA3389 -PU53,161,123 -oA $name/livehosts_1_$name $subs
         nmap -n -sn -PO -oA $name/livehosts_2_$name $subs
         nmap -n -sn -PP -oA $name/livehosts_3_$name $subs
         nmap -n -sn -PM -oA $name/livehosts_4_$name $subs
@@ -253,12 +302,12 @@ do
 
                 all_down=false
                 nmap -sV -Pn -p$ports -oA $host/tcp/full_tcp_scan $host
-                nmap -p$ports -Pn --script "(default or vuln or version) and safe" -oA $host/tcp/safe_scripts $host
+                #nmap -p$ports -Pn --script "(default or vuln or version) and safe" -oA $host/tcp/safe_scripts $host
                 #nmap -p$ports -Pn --script "(default or vuln or version or external or discovery) and safe" -oA $host/tcp/safe_scripts $host
-                #nmap -A -p$ports -oA $host/tcp/aggressive_tcp_scan $host
                 #nmap --script "(vuln and safe)" -Pn -p$ports -oA $host/tcp/script_vuln $host
 
                 #add all the nmaps you want!!
+                
                 awk '/ open / && /tcp/ {print $1}' $host/tcp/all_tcp_ports.nmap | awk -F "/" '{print $1}' >> .nessus_tcp_ports
                 echo -e $host >> .nessus_hosts
         else
@@ -373,7 +422,7 @@ secs_to_human() {
         min=$(($time/60))
         secs=$(($time-$min*60))
     fi
-    echo "Time Elapsed : ${min} minutes and ${secs} seconds."
+    echo -e "\nTime Elapsed : ${min} minutes and ${secs} seconds."
 }
 
 
@@ -428,6 +477,115 @@ ssh_check() {
 }
 
 
+
+find_user() {
+  awk -F: '$3 >= 1000 && $3 < 65534 {print $1; exit}' /etc/passwd
+}
+
+
+
+function raider_webapp_recon() {
+
+USER=$(find_user)
+
+
+while read -r ip
+do
+        if [[ -f "${ip}/tcp/all_tcp_ports.nmap" ]]
+        then
+                if [[ -f "${ip}/tcp/full_tcp_scan.nmap" ]]
+                then
+                        grep " open " ${ip}/tcp/full_tcp_scan.nmap -H >> .open_tcp_ports
+                else
+                        echo -e "${red}[-]${endc} No possible http/https open ports found for $ip"
+                fi
+        else
+                echo -e "${red}[-]${endc} The $ip has not been scanned!"
+                echo $ip >> not_scanned
+        fi
+
+done < $hosts_file
+
+
+
+
+if [[ -f ".open_tcp_ports" ]]
+then
+        all_down=false
+        for i in "${nmap_version_no_http[@]}"; do
+                grep -v "${i}" .open_tcp_ports > .open_tcp_ports2
+                cat .open_tcp_ports2 | sort -u > .open_tcp_ports
+                rm .open_tcp_ports2     
+        done
+        
+
+        sed 's/:/\//g' .open_tcp_ports | awk -F '/' '{print "http://"$1":"$4}' | sort -u > .http_checks
+        sed 's/:/\//g' .open_tcp_ports | awk -F '/' '{print "https://"$1":"$4}' | sort -u > .https_checks
+
+else
+        echo -e "${red}[-]${endc} No possible http/https open ports found!"
+        exit 1
+fi
+
+echo -e "${blue}[*]${endc} Checking Whatweb Requests"
+
+##whatweb
+
+mkdir what_web 2> /dev/null
+while read -r url
+do
+        timeout 5 whatweb $url | tee -a what_web/http_results.txt
+ 
+done < .http_checks
+
+while read -r url
+do
+        timeout 5 whatweb $url | tee -a what_web/https_results.txt
+
+
+done < .https_checks
+
+
+sed -E 's/\x1B\[[0-9;]*[a-zA-Z]//g' what_web/http_results.txt > what_web/http_results_no_color.txt
+sed -E 's/\x1B\[[0-9;]*[a-zA-Z]//g' what_web/https_results.txt > what_web/https_results_no_color.txt
+
+
+
+echo -e "\n${green}[+]${endc} Whatweb Results saved under $(pwd)/what_web folder."
+
+sleep 3
+
+
+# eyewitness
+
+awk '{print $1}' what_web/http*results_no_color.txt | sort -u > .eyewitn_file
+
+echo -e "${blue}[*]${endc} Performing Eyewitness Recon"
+
+sleep 2
+
+sudo -u $USER eyewitness -f .eyewitn_file --no-prompt --no-dns --max-retries 2 --threads 2 --delay 2 --timeout 20 -d eyewitness_results
+
+
+if [ $? -eq 0 ]; then
+        echo -e "${green}[+]${endc} All done!"
+else
+    echo -e "${red}[-]${endc} Something went wrong with the eyewitness."
+fi
+
+
+if [[ -f "not_scanned" ]]
+then
+        echo -e "${blue}[*]${endc} The following IPs have not been scanned:"
+        awk '{printf "%s, ",$0}' not_scanned | sed 's/..$//'
+
+fi
+rm .https_checks .http_checks .open_tcp_ports .open_tcp_ports2 .eyewitn_file 2>/dev/null
+
+
+}
+
+
 #main()
 start=$(date +%s)
 
@@ -440,6 +598,8 @@ fi
 version
 
 flags "$@"
+
+
 
 if [ "$disc_flag" != 0 ]
 then
@@ -469,7 +629,7 @@ then
                 echo -e "\n${red}[-] ${endc}The file \"$hosts_file\" does not exist."
         fi
 
-elif [ "$hosts_flag" != 0 ]
+elif [[ "$port_scan" != 0 && "$hosts_flag" != 0 ]]
 then
         if [ -f "$hosts_file" ]
         then
@@ -543,11 +703,18 @@ then
                 echo -e "\n${red}[-] ${endc}The udp restore file does not exist."
         fi
 
-else
-        help
 fi
 
+if [[ "$web_flag" != 0 ]]
+then
+        if [[ -f "$hosts_file" ]]
+        then
+                raider_webapp_recon
+        else
+                echo -e "\n${red}[-] ${endc}The file \"$hosts_file\" does not exist."
 
+        fi
+fi
 
 if $all_down ; then
         echo -e "${red}

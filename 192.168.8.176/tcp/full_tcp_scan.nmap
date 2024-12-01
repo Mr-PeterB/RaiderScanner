@@ -1,0 +1,43 @@
+# Nmap 7.95 scan initiated Sat Nov 30 17:59:38 2024 as: nmap -sV -Pn -p9295,41800 -oA 192.168.8.176/tcp/full_tcp_scan 192.168.8.176
+Nmap scan report for 192.168.8.176
+Host is up (0.045s latency).
+
+PORT      STATE SERVICE         VERSION
+9295/tcp  open  armcenterhttps?
+41800/tcp open  http            Mongoose httpd
+1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at https://nmap.org/cgi-bin/submit.cgi?new-service :
+SF-Port9295-TCP:V=7.95%I=7%D=11/30%Time=674B3676%P=arm-apple-darwin23.4.0%
+SF:r(GenericLines,84,"HTTP/1\.1\x20403\x20Forbidden\r\nConnection:\x20clos
+SF:e\r\nPragma:\x20no-cache\r\nContent-Length:\x200\r\nRP-Version:\x205\.0
+SF:\r\nRP-Application-Reason:\x2080108bff\r\n\r\n")%r(GetRequest,84,"HTTP/
+SF:1\.1\x20403\x20Forbidden\r\nConnection:\x20close\r\nPragma:\x20no-cache
+SF:\r\nContent-Length:\x200\r\nRP-Version:\x205\.0\r\nRP-Application-Reaso
+SF:n:\x2080108bff\r\n\r\n")%r(HTTPOptions,84,"HTTP/1\.1\x20403\x20Forbidde
+SF:n\r\nConnection:\x20close\r\nPragma:\x20no-cache\r\nContent-Length:\x20
+SF:0\r\nRP-Version:\x205\.0\r\nRP-Application-Reason:\x2080108bff\r\n\r\n"
+SF:)%r(RTSPRequest,84,"HTTP/1\.1\x20403\x20Forbidden\r\nConnection:\x20clo
+SF:se\r\nPragma:\x20no-cache\r\nContent-Length:\x200\r\nRP-Version:\x205\.
+SF:0\r\nRP-Application-Reason:\x2080108bff\r\n\r\n")%r(Help,84,"HTTP/1\.1\
+SF:x20403\x20Forbidden\r\nConnection:\x20close\r\nPragma:\x20no-cache\r\nC
+SF:ontent-Length:\x200\r\nRP-Version:\x205\.0\r\nRP-Application-Reason:\x2
+SF:080108bff\r\n\r\n")%r(SSLSessionReq,84,"HTTP/1\.1\x20403\x20Forbidden\r
+SF:\nConnection:\x20close\r\nPragma:\x20no-cache\r\nContent-Length:\x200\r
+SF:\nRP-Version:\x205\.0\r\nRP-Application-Reason:\x2080108bff\r\n\r\n")%r
+SF:(TerminalServerCookie,84,"HTTP/1\.1\x20403\x20Forbidden\r\nConnection:\
+SF:x20close\r\nPragma:\x20no-cache\r\nContent-Length:\x200\r\nRP-Version:\
+SF:x205\.0\r\nRP-Application-Reason:\x2080108bff\r\n\r\n")%r(TLSSessionReq
+SF:,84,"HTTP/1\.1\x20403\x20Forbidden\r\nConnection:\x20close\r\nPragma:\x
+SF:20no-cache\r\nContent-Length:\x200\r\nRP-Version:\x205\.0\r\nRP-Applica
+SF:tion-Reason:\x2080108bff\r\n\r\n")%r(Kerberos,84,"HTTP/1\.1\x20403\x20F
+SF:orbidden\r\nConnection:\x20close\r\nPragma:\x20no-cache\r\nContent-Leng
+SF:th:\x200\r\nRP-Version:\x205\.0\r\nRP-Application-Reason:\x2080108bff\r
+SF:\n\r\n")%r(FourOhFourRequest,84,"HTTP/1\.1\x20403\x20Forbidden\r\nConne
+SF:ction:\x20close\r\nPragma:\x20no-cache\r\nContent-Length:\x200\r\nRP-Ve
+SF:rsion:\x205\.0\r\nRP-Application-Reason:\x2080108bff\r\n\r\n")%r(LPDStr
+SF:ing,84,"HTTP/1\.1\x20403\x20Forbidden\r\nConnection:\x20close\r\nPragma
+SF::\x20no-cache\r\nContent-Length:\x200\r\nRP-Version:\x205\.0\r\nRP-Appl
+SF:ication-Reason:\x2080108bff\r\n\r\n");
+MAC Address: A4:FC:77:DA:F6:B1 (Mega Well Limited)
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Sat Nov 30 18:01:12 2024 -- 1 IP address (1 host up) scanned in 93.77 seconds

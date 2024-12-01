@@ -1,0 +1,5 @@
+# Nmap 7.95 scan initiated Sat Nov 30 17:40:52 2024 as: nmap -vv -p- -sS -Pn -n --open --defeat-rst-ratelimit --max-retries 3 --host-timeout 90m -oA 10.211.55.2/tcp/all_tcp_ports 10.211.55.2
+# Ports scanned: TCP(65535;1-65535) UDP(0;) SCTP(0;) PROTOCOLS(0;)
+Host: 10.211.55.2 ()	Status: Up
+Host: 10.211.55.2 ()	Ports: 53/open/tcp//domain///, 5000/open/tcp//upnp///, 7000/open/tcp//afs3-fileserver///, 49311/open/tcp/////, 49435/open/tcp/////, 57621/open/tcp/////	Ignored State: closed (65529)
+# Nmap done at Sat Nov 30 17:40:55 2024 -- 1 IP address (1 host up) scanned in 3.71 seconds

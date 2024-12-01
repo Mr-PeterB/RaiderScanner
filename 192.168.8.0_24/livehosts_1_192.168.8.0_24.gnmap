@@ -1,0 +1,1 @@
+# Nmap 7.95 scan initiated Sat Nov 30 17:22:34 2024 as: nmap -n -PR -PS80,443 -PA3389 -PU53,161,123 -oA 192.168.8.0_24/livehosts_1_192.168.8.0_24 192.168.8.0/24

@@ -1,0 +1,7 @@
+# Nmap 7.95 scan initiated Sat Nov 30 17:35:37 2024 as: nmap -n -sn -PM -oA 192.168.8.0_24/livehosts_4_192.168.8.0_24 192.168.8.0/24
+Host: 192.168.8.1 ()	Status: Up
+Host: 192.168.8.124 ()	Status: Up
+Host: 192.168.8.156 ()	Status: Up
+Host: 192.168.8.176 ()	Status: Up
+Host: 192.168.8.127 ()	Status: Up
+# Nmap done at Sat Nov 30 17:35:39 2024 -- 256 IP addresses (5 hosts up) scanned in 2.01 seconds

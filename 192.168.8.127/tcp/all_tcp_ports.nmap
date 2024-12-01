@@ -1,0 +1,15 @@
+# Nmap 7.95 scan initiated Sat Nov 30 17:53:29 2024 as: nmap -vv -p- -sS -Pn -n --open --defeat-rst-ratelimit --max-retries 3 --host-timeout 90m -oA 192.168.8.127/tcp/all_tcp_ports 192.168.8.127
+Nmap scan report for 192.168.8.127
+Host is up, received user-set (0.00010s latency).
+Scanned at 2024-11-30 17:53:29 EET for 4s
+Not shown: 65529 closed tcp ports (reset)
+PORT      STATE SERVICE         REASON
+53/tcp    open  domain          syn-ack ttl 64
+5000/tcp  open  upnp            syn-ack ttl 64
+7000/tcp  open  afs3-fileserver syn-ack ttl 64
+49311/tcp open  unknown         syn-ack ttl 64
+49435/tcp open  unknown         syn-ack ttl 64
+57621/tcp open  unknown         syn-ack ttl 64
+
+Read data files from: /opt/homebrew/bin/../share/nmap
+# Nmap done at Sat Nov 30 17:53:33 2024 -- 1 IP address (1 host up) scanned in 3.71 seconds

@@ -1,0 +1,13 @@
+# Nmap 7.95 scan initiated Sat Nov 30 17:56:25 2024 as: nmap -vv -p- -sS -Pn -n --open --defeat-rst-ratelimit --max-retries 3 --host-timeout 90m -oA 192.168.8.176/tcp/all_tcp_ports 192.168.8.176
+Nmap scan report for 192.168.8.176
+Host is up, received arp-response (0.0072s latency).
+Scanned at 2024-11-30 17:56:25 EET for 193s
+Not shown: 48583 filtered tcp ports (no-response), 16950 closed tcp ports (reset)
+Some closed ports may be reported as filtered due to --defeat-rst-ratelimit
+PORT      STATE SERVICE        REASON
+9295/tcp  open  armcenterhttps syn-ack ttl 64
+41800/tcp open  unknown        syn-ack ttl 64
+MAC Address: A4:FC:77:DA:F6:B1 (Mega Well Limited)
+
+Read data files from: /opt/homebrew/bin/../share/nmap
+# Nmap done at Sat Nov 30 17:59:38 2024 -- 1 IP address (1 host up) scanned in 192.91 seconds

@@ -1,0 +1,4 @@
+# Nmap 7.95 scan initiated Sat Nov 30 17:59:38 2024 as: nmap -sV -Pn -p9295,41800 -oA 192.168.8.176/tcp/full_tcp_scan 192.168.8.176
+Host: 192.168.8.176 ()	Status: Up
+Host: 192.168.8.176 ()	Ports: 9295/open/tcp//armcenterhttps?///, 41800/open/tcp//http//Mongoose httpd/
+# Nmap done at Sat Nov 30 18:01:12 2024 -- 1 IP address (1 host up) scanned in 93.77 seconds

@@ -1,0 +1,5 @@
+# Nmap 7.95 scan initiated Sat Nov 30 17:43:46 2024 as: nmap -vv -p- -sS -Pn -n --open --defeat-rst-ratelimit --max-retries 3 --host-timeout 90m -oA 10.211.55.44/tcp/all_tcp_ports 10.211.55.44
+# Ports scanned: TCP(65535;1-65535) UDP(0;) SCTP(0;) PROTOCOLS(0;)
+Host: 10.211.55.44 ()	Status: Up
+Host: 10.211.55.44 ()	Ports: 135/open/tcp//msrpc///, 139/open/tcp//netbios-ssn///, 445/open/tcp//microsoft-ds///, 49668/open/tcp/////	Ignored State: filtered (65531)
+# Nmap done at Sat Nov 30 17:45:34 2024 -- 1 IP address (1 host up) scanned in 108.48 seconds

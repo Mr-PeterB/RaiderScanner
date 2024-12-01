@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///opt/homebrew/bin/../share/nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.95 scan initiated Sat Nov 30 17:35:33 2024 as: nmap -n -sn -PO -oA 192.168.8.0_24/livehosts_2_192.168.8.0_24 192.168.8.0/24 -->
+<nmaprun scanner="nmap" args="nmap -n -sn -PO -oA 192.168.8.0_24/livehosts_2_192.168.8.0_24 192.168.8.0/24" start="1732980933" startstr="Sat Nov 30 17:35:33 2024" version="7.95" xmloutputversion="1.05">
+<verbose level="0"/>
+<debugging level="0"/>
+<host><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="192.168.8.1" addrtype="ipv4"/>
+<address addr="94:83:C4:42:83:CB" addrtype="mac" vendor="GL Technologies (Hong Kong) Limited"/>
+<hostnames>
+</hostnames>
+<times srtt="4319" rttvar="4467" to="100000"/>
+</host>
+<host><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="192.168.8.124" addrtype="ipv4"/>
+<address addr="4C:BB:58:44:8C:E0" addrtype="mac" vendor="Chicony Electronics"/>
+<hostnames>
+</hostnames>
+<times srtt="51950" rttvar="51950" to="259750"/>
+</host>
+<host><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="192.168.8.126" addrtype="ipv4"/>
+<address addr="2E:29:5D:CA:5D:F9" addrtype="mac"/>
+<hostnames>
+</hostnames>
+<times srtt="68335" rttvar="68335" to="341675"/>
+</host>
+<host><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="192.168.8.156" addrtype="ipv4"/>
+<address addr="48:87:59:29:7E:57" addrtype="mac" vendor="Xiaomi Communications"/>
+<hostnames>
+</hostnames>
+<times srtt="51541" rttvar="51541" to="257705"/>
+</host>
+<host><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="192.168.8.176" addrtype="ipv4"/>
+<address addr="A4:FC:77:DA:F6:B1" addrtype="mac" vendor="Mega Well Limited"/>
+<hostnames>
+</hostnames>
+<times srtt="71681" rttvar="43780" to="246801"/>
+</host>
+<host><status state="up" reason="localhost-response" reason_ttl="0"/>
+<address addr="192.168.8.127" addrtype="ipv4"/>
+<hostnames>
+</hostnames>
+</host>
+<runstats><finished time="1732980935" timestr="Sat Nov 30 17:35:35 2024" summary="Nmap done at Sat Nov 30 17:35:35 2024; 256 IP addresses (6 hosts up) scanned in 2.40 seconds" elapsed="2.40" exit="success"/><hosts up="6" down="250" total="256"/>
+</runstats>
+</nmaprun>

@@ -1,0 +1,11 @@
+10.211.55.2/tcp/full_tcp_scan.nmap:49311/tcp open  unknown
+10.211.55.2/tcp/full_tcp_scan.nmap:49435/tcp open  unknown
+10.211.55.2/tcp/full_tcp_scan.nmap:57621/tcp open  unknown
+10.211.55.44/tcp/full_tcp_scan.nmap:49668/tcp open  msrpc         Microsoft Windows RPC
+10.211.55.45/tcp/full_tcp_scan.nmap:65533/tcp open  http    SimpleHTTPServer 0.6 (Python 3.12.6)
+192.168.8.1/tcp/full_tcp_scan.nmap:443/tcp open  ssl/http nginx 1.17.7
+192.168.8.124/tcp/full_tcp_scan.nmap:62111/tcp open  ssh      OpenSSH 9.2p1 Debian 2+deb12u3 (protocol 2.0)
+192.168.8.127/tcp/full_tcp_scan.nmap:49311/tcp open  unknown
+192.168.8.127/tcp/full_tcp_scan.nmap:49435/tcp open  unknown
+192.168.8.127/tcp/full_tcp_scan.nmap:57621/tcp open  unknown
+192.168.8.176/tcp/full_tcp_scan.nmap:41800/tcp open  http            Mongoose httpd

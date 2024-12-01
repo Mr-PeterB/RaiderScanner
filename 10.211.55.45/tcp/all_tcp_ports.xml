@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///opt/homebrew/bin/../share/nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.95 scan initiated Sat Nov 30 17:46:34 2024 as: nmap -vv -p- -sS -Pn -n -&#45;open -&#45;defeat-rst-ratelimit -&#45;max-retries 3 -&#45;host-timeout 90m -oA 10.211.55.45/tcp/all_tcp_ports 10.211.55.45 -->
+<nmaprun scanner="nmap" args="nmap -vv -p- -sS -Pn -n -&#45;open -&#45;defeat-rst-ratelimit -&#45;max-retries 3 -&#45;host-timeout 90m -oA 10.211.55.45/tcp/all_tcp_ports 10.211.55.45" start="1732981594" startstr="Sat Nov 30 17:46:34 2024" version="7.95" xmloutputversion="1.05">
+<scaninfo type="syn" protocol="tcp" numservices="65535" services="1-65535"/>
+<verbose level="2"/>
+<debugging level="0"/>
+<taskbegin task="ARP Ping Scan" time="1732981594"/>
+<hosthint><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="10.211.55.45" addrtype="ipv4"/>
+<address addr="00:1C:42:0C:D0:37" addrtype="mac" vendor="Parallels"/>
+<hostnames>
+</hostnames>
+</hosthint>
+<taskend task="ARP Ping Scan" time="1732981594" extrainfo="1 total hosts"/>
+<taskbegin task="SYN Stealth Scan" time="1732981594"/>
+<taskend task="SYN Stealth Scan" time="1732981598" extrainfo="65535 total ports"/>
+<host starttime="1732981594" endtime="1732981598"><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="10.211.55.45" addrtype="ipv4"/>
+<address addr="00:1C:42:0C:D0:37" addrtype="mac" vendor="Parallels"/>
+<hostnames>
+</hostnames>
+<ports><extraports state="closed" count="65532">
+<extrareasons reason="reset" count="65532" proto="tcp" ports="1-21,23-79,81-65532,65534-65535"/>
+</extraports>
+<port protocol="tcp" portid="22"><state state="open" reason="syn-ack" reason_ttl="64"/><service name="ssh" method="table" conf="3"/></port>
+<port protocol="tcp" portid="80"><state state="open" reason="syn-ack" reason_ttl="64"/><service name="http" method="table" conf="3"/></port>
+<port protocol="tcp" portid="65533"><state state="open" reason="syn-ack" reason_ttl="64"/></port>
+</ports>
+<times srtt="143" rttvar="12" to="100000"/>
+</host>
+<runstats><finished time="1732981599" timestr="Sat Nov 30 17:46:39 2024" summary="Nmap done at Sat Nov 30 17:46:39 2024; 1 IP address (1 host up) scanned in 4.14 seconds" elapsed="4.14" exit="success"/><hosts up="1" down="0" total="1"/>
+</runstats>
+</nmaprun>

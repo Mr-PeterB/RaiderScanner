@@ -1,0 +1,10 @@
+# Nmap 7.95 scan initiated Sat Nov 30 17:35:56 2024 as: nmap -n -sn -PP -oA 10.211.55.0_24/livehosts_3_10.211.55.0_24 10.211.55.0/24
+Nmap scan report for 10.211.55.44
+Host is up (0.00049s latency).
+MAC Address: 00:1C:42:28:A0:90 (Parallels)
+Nmap scan report for 10.211.55.45
+Host is up (0.00037s latency).
+MAC Address: 00:1C:42:0C:D0:37 (Parallels)
+Nmap scan report for 10.211.55.2
+Host is up.
+# Nmap done at Sat Nov 30 17:35:59 2024 -- 256 IP addresses (3 hosts up) scanned in 2.25 seconds
