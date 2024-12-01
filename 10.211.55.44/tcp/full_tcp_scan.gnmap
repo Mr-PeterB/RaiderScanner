@@ -1,4 +1,0 @@
-# Nmap 7.95 scan initiated Sat Nov 30 17:45:35 2024 as: nmap -sV -Pn -p135,139,445,49668 -oA 10.211.55.44/tcp/full_tcp_scan 10.211.55.44
-Host: 10.211.55.44 ()	Status: Up
-Host: 10.211.55.44 ()	Ports: 135/open/tcp//msrpc//Microsoft Windows RPC/, 139/open/tcp//netbios-ssn//Microsoft Windows netbios-ssn/, 445/open/tcp//microsoft-ds?///, 49668/open/tcp//msrpc//Microsoft Windows RPC/
-# Nmap done at Sat Nov 30 17:46:34 2024 -- 1 IP address (1 host up) scanned in 59.83 seconds

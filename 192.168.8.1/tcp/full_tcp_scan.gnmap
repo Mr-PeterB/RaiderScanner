@@ -1,4 +1,0 @@
-# Nmap 7.95 scan initiated Sat Nov 30 17:50:51 2024 as: nmap -sV -Pn -p22,53,80,443 -oA 192.168.8.1/tcp/full_tcp_scan 192.168.8.1
-Host: 192.168.8.1 ()	Status: Up
-Host: 192.168.8.1 ()	Ports: 22/open/tcp//ssh//Dropbear sshd (protocol 2.0)/, 53/open/tcp//domain//Unbound/, 80/open/tcp//http//nginx 1.17.7/, 443/open/tcp//ssl|http//nginx 1.17.7/
-# Nmap done at Sat Nov 30 17:51:12 2024 -- 1 IP address (1 host up) scanned in 20.49 seconds

@@ -117,13 +117,32 @@ OPTIONS:
         -i, --identity  The private ssh identity file
         -s, --ssh [username]The username to use for authentication 
 
+        Web Scanning, Whatweb and eyewitness
+        -f, --file      The file with hosts (one by one in line)
+        -w, --web       Use web scanning
+
+
 EXAMPLES:
+
+Discover Live Hosts on vlans
 $program_name -d subnets.txt
-$program_name -r
+
+Port Scanning TCP / UDP
 $program_name -f hostses.txt -t
-$program_name -f hostes -t -u
+$program_name -f hostses.txt -u
+$program_name -f hostses.txt -t -u
+
+Restore tcp/udp scan:
+$program_name -r
+
 SSH:
 $program_name -f ssh_spray.txt --ssh root -i id_rsa
+
+WEB Scanning:
+$program_name -f all_live_hosts.txt -w
+
+Combined Scans:
+$program_name -d subnets.txt; $program_name -f all_live_hosts.txt -t -u -w
 "
 exit 1
 }

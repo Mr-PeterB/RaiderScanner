@@ -1,4 +1,0 @@
-# Nmap 7.95 scan initiated Sat Nov 30 17:53:33 2024 as: nmap -sV -Pn -p53,5000,7000,49311,49435,57621 -oA 192.168.8.127/tcp/full_tcp_scan 192.168.8.127
-Host: 192.168.8.127 ()	Status: Up
-Host: 192.168.8.127 ()	Ports: 53/open/tcp//domain?///, 5000/open/tcp//rtsp///, 7000/open/tcp//rtsp///, 49311/open/tcp//unknown///, 49435/open/tcp/////, 57621/open/tcp/////
-# Nmap done at Sat Nov 30 17:56:23 2024 -- 1 IP address (1 host up) scanned in 170.40 seconds

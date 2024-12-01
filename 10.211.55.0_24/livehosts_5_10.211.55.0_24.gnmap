@@ -1,5 +1,0 @@
-# Nmap 7.95 scan initiated Sat Nov 30 17:36:01 2024 as: nmap -n -sn -PE -oA 10.211.55.0_24/livehosts_5_10.211.55.0_24 10.211.55.0/24
-Host: 10.211.55.44 ()	Status: Up
-Host: 10.211.55.45 ()	Status: Up
-Host: 10.211.55.2 ()	Status: Up
-# Nmap done at Sat Nov 30 17:36:03 2024 -- 256 IP addresses (3 hosts up) scanned in 2.26 seconds

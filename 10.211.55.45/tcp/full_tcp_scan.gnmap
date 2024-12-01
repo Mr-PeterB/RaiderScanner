@@ -1,4 +1,0 @@
-# Nmap 7.95 scan initiated Sat Nov 30 17:46:39 2024 as: nmap -sV -Pn -p22,80,65533 -oA 10.211.55.45/tcp/full_tcp_scan 10.211.55.45
-Host: 10.211.55.45 (tron)	Status: Up
-Host: 10.211.55.45 (tron)	Ports: 22/open/tcp//ssh//OpenSSH 9.9p1 Debian 1 (protocol 2.0)/, 80/open/tcp//http//Apache httpd 2.4.62 ((Debian))/, 65533/open/tcp//http//SimpleHTTPServer 0.6 (Python 3.12.6)/
-# Nmap done at Sat Nov 30 17:46:45 2024 -- 1 IP address (1 host up) scanned in 6.23 seconds

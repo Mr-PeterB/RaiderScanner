@@ -1,8 +1,8 @@
 ![image](https://user-images.githubusercontent.com/83140947/200195818-5d7b369a-0173-417d-abd8-553115a0c877.png)
 
-# Raider Scanner v2.8
+# Raider Scanner v3.0
 ## Description
-A simple tool for Pentesters that combines and runs nmap scans.
+A simple tool for Pentesters that combines and runs nmap scans and much more..
 ***
 ## Installation:
 
@@ -31,11 +31,37 @@ OPTIONS:
         -r, --restore   Restore the previous session
         -h, --help      Help Menu
 
+        SSH private key spray to hosts
+        -f, --file      The file with hosts (one by one in line)
+        -i, --identity  The private ssh identity file
+        -s, --ssh [username]The username to use for authentication 
+
+        Web Scanning, Whatweb and eyewitness
+        -f, --file      The file with hosts (one by one in line)
+        -w, --web       Use web scanning
+
+
 EXAMPLES:
+
+Discover Live Hosts on vlans
 raider -d subnets.txt
+
+Port Scanning TCP / UDP
+raider -f hostses.txt -t
+raider -f hostses.txt -u
+raider -f hostses.txt -t -u
+
+Restore tcp/udp scan:
 raider -r
-raider  -f hostses.txt -t
-raider -f hostes -t -u
+
+SSH:
+raider -f ssh_spray.txt --ssh root -i id_rsa
+
+WEB Scanning:
+raider -f all_live_hosts.txt -w
+
+Combined Scans:
+raider -d subnets.txt; raider -f all_live_hosts.txt -t -u -w
 ```
 ***
 ## For Host Discovery
