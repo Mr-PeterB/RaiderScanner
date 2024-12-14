@@ -69,8 +69,7 @@ nmap_version_no_http=(
                         "ldap"
                         "modbus"
                         "exec"
-                        "login"
-                        "rtsp"
+                        "rlogin"
                         "rsync"
                         "ms-sql-s"
                         "oracle-tns"
@@ -147,7 +146,16 @@ $program_name -d subnets.txt; $program_name -f all_live_hosts.txt -t -u -w
 exit 1
 }
 
+function check_dependecies() {
+    sleep 1
+    local program=${1}
+    if ! hash $program 2>/dev/null
+    then
+        echo -e "${red}[-]${endc} Please install '$program'"
+        exit 1
+    fi
 
+}
 
 if [[ -z  $1 ]]
 then
@@ -222,11 +230,11 @@ echo -e "${blue}
 ██╔══██╗██╔══██║██║██║  ██║██╔══╝  ██╔══██╗    ╚════██║██║     ██╔══██║██║╚██╗██║██║╚██╗██║██╔══╝  ██╔══██╗
 ██║  ██║██║  ██║██║██████╔╝███████╗██║  ██║    ███████║╚██████╗██║  ██║██║ ╚████║██║ ╚████║███████╗██║  ██║
 ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝    ╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝${fcyan}
-                                                                                                _____  ___  
-                                                                                         __   _|___ / / _ \ 
-                                                                                         \ \ / / |_ \| | | |
-                                                                                          \ V / ___) | |_| |
-                                                                                           \_/ |____(_)___/      
+                                                                                                    _____  _ 
+                                                                                             __   _|___ / / |
+                                                                                             \ \ / / |_ \ | |
+                                                                                              \ V / ___) || |
+                                                                                               \_/ |____(_)_|    
 ${red}
                                         ⠀⠀⠀⠀⠀⠀⠀⣠⣤⡀⠀⠀⢀⣤⣀⠀⠀⠀⠀⠀⠀⠀
                                         ⠀⠀⠀⠀⠀⣠⣾⣿⡿⠁⠀⠀⠈⢿⣿⣷⣄⠀⠀⠀⠀⠀
@@ -497,15 +505,7 @@ ssh_check() {
 
 
 
-find_user() {
-  awk -F: '$3 >= 1000 && $3 < 65534 {print $1; exit}' /etc/passwd
-}
-
-
-
 function raider_webapp_recon() {
-
-USER=$(find_user)
 
 
 while read -r ip
@@ -583,11 +583,47 @@ echo -e "${blue}[*]${endc} Performing Eyewitness Recon"
 
 sleep 2
 
-sudo -u $USER eyewitness -f .eyewitn_file --no-prompt --no-dns --max-retries 2 --threads 2 --delay 2 --timeout 20 -d eyewitness_results
+# Find a non-root user who is a member of the sudo group
+NON_ROOT_USER=$(getent group sudo | awk -F: '{print $4}' | awk -v RS=',' '$1 !~ /^$/ {print $1; exit}')
+
+CURRENT_DIR=$(pwd)
+
+
+if [[ -z "$NON_ROOT_USER" ]]; then
+    echo -e "${red}[-]${endc} No suitable non-root sudo user found. Exiting."
+    exit 1
+fi
+
+echo -e "${blue}[*]${endc} Using user '$NON_ROOT_USER' to run eyewitness."
+
+
+sudo chown -R "$NON_ROOT_USER":"$NON_ROOT_USER" "$CURRENT_DIR"
+sudo chmod -R 775 "$CURRENT_DIR"
+sudo chown -R "$NON_ROOT_USER":"$NON_ROOT_USER" /var/www/html
+sudo chmod -R 775 /var/www/html
+
+
+
+INTERFACE_IP=$(ip addr show tun0 | grep 'inet ' | awk '{print $2}' | cut -d/ -f1)
+
+if [[ -z "$INTERFACE_IP" ]]
+then
+        INTERFACE_IP=$(hostname -I | awk '{print $1}')
+fi
+
+sudo -u $NON_ROOT_USER eyewitness -f .eyewitn_file --no-prompt --no-dns --max-retries 2 --threads 2 --delay 2 --timeout 20 -d /var/www/html/eyewitness_results
+
+if ! systemctl is-active --quiet apache2; then
+    echo -e "${yellow}[!]${endc} Apache2 is not running. Starting Apache2..."
+    sudo systemctl start apache2
+else
+    echo -e "${Blue}[*]${endc} Apache2 is already running."
+fi
 
 
 if [ $? -eq 0 ]; then
-        echo -e "${green}[+]${endc} All done!"
+        echo -e "${blue}[*]${endc} Results saved at /var/www/html/eyewitness_results"
+        echo -e "${green}[+]${endc} Navigate to http://$INTERFACE_IP/eyewitness_results/report.html"
 else
     echo -e "${red}[-]${endc} Something went wrong with the eyewitness."
 fi
@@ -620,12 +656,15 @@ flags "$@"
 
 
 
+
 if [ "$disc_flag" != 0 ]
 then
         if [ "$disc_flag" != 0 ]
         then
                 if [ -f "$disc_file" ]
                 then
+                        echo -e "\n${blue}[*]${endc} Checking dependencies..\n"
+                        check_dependecies nmap
                         DeadOrAlive
                         exit 0
                 else
@@ -639,6 +678,8 @@ then
         then
                 if [ -f "$ssh_key" ]
                 then
+                        echo -e "\n${blue}[*]${endc} Checking dependencies..\n"
+                        check_dependecies ssh
                         ssh_check
                         exit 0
                 else
@@ -652,7 +693,8 @@ elif [[ "$port_scan" != 0 && "$hosts_flag" != 0 ]]
 then
         if [ -f "$hosts_file" ]
         then
-
+                echo -e "\n${blue}[*]${endc} Checking dependencies..\n"
+                check_dependecies nmap
 
                 if [ "$tcp_flag" != 0 ]
                 then
@@ -672,6 +714,8 @@ then
         fi
 elif [ "$restore_flag" != 0 ]
 then
+        echo -e "\n${blue}[*]${endc} Checking dependencies..\n"
+        check_dependecies nmap
         #tcp
         if [ -f ".restore_tcp_raider2" ]
         then
@@ -728,6 +772,9 @@ if [[ "$web_flag" != 0 ]]
 then
         if [[ -f "$hosts_file" ]]
         then
+                echo -e "\n${blue}[*]${endc} Checking dependencies..\n"
+                check_dependecies whatweb
+                check_dependecies eyewitness
                 raider_webapp_recon
         else
                 echo -e "\n${red}[-] ${endc}The file \"$hosts_file\" does not exist."
