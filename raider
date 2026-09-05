@@ -47,6 +47,7 @@ exit_flag=0
 all_down=true
 total_ports=""
 no_open_tcp_ports_flags=0
+nessus_flag=0
 
 #Distros vars
 nmap_version_no_http=(
@@ -207,6 +208,10 @@ flags () {
            web_flag=1
            shift
            ;;
+        --nessus)
+           nessus_flag=1
+           shift
+           ;;
         -h|--help|*)
             help
             ;;
@@ -230,11 +235,12 @@ echo -e "${blue}
 ██╔══██╗██╔══██║██║██║  ██║██╔══╝  ██╔══██╗    ╚════██║██║     ██╔══██║██║╚██╗██║██║╚██╗██║██╔══╝  ██╔══██╗
 ██║  ██║██║  ██║██║██████╔╝███████╗██║  ██║    ███████║╚██████╗██║  ██║██║ ╚████║██║ ╚████║███████╗██║  ██║
 ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝    ╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝${fcyan}
-                                                                                                    _____  _ 
-                                                                                             __   _|___ / / |
-                                                                                             \ \ / / |_ \ | |
-                                                                                              \ V / ___) || |
-                                                                                               \_/ |____(_)_|    
+                                                                                                _____  ____  
+                                                                                         __   _|___ / |___ \ 
+                                                                                         \ \ / / |_ \   __) |
+                                                                                          \ V / ___) | / __/ 
+                                                                                           \_/ |____(_)_____|
+                                                                                                             
 ${red}
                                         ⠀⠀⠀⠀⠀⠀⠀⣠⣤⡀⠀⠀⢀⣤⣀⠀⠀⠀⠀⠀⠀⠀
                                         ⠀⠀⠀⠀⠀⣠⣾⣿⡿⠁⠀⠀⠈⢿⣿⣷⣄⠀⠀⠀⠀⠀
@@ -254,7 +260,7 @@ ${red}
 ${endc}"
 sleep 2
 # ANSI Shadow
-# https://patorjk.com/software/taag/#p=display&h=2&v=3&f=Standard&t=v3.0
+# https://patorjk.com/software/taag/#p=display&h=2&v=3&f=Standard&t=v3.2
 }
 
 
@@ -269,11 +275,10 @@ do
         name=${subs/\//_}
         mkdir $name
         #nmap -n -PR -PS80,443 -PA3389 -PU53,161,123 -oA $name/livehosts_1_$name $subs
-        nmap -n -sn -PO -oA $name/livehosts_2_$name $subs
+        #nmap -n -sn -PO -oA $name/livehosts_2_$name $subs
         nmap -n -sn -PP -oA $name/livehosts_3_$name $subs
         nmap -n -sn -PM -oA $name/livehosts_4_$name $subs
         nmap -n -sn -PE -oA $name/livehosts_5_$name $subs
-        nmap -n -sn -PU -oA $name/livehosts_6_$name $subs
         fping -agq $subs | tee -a $name/fping_results_$name.txt
 
         grep "Up" $name/livehosts_1_$name.gnmap| awk '{print$ 2}' >> $name/tmp
@@ -281,7 +286,6 @@ do
         grep "Up" $name/livehosts_3_$name.gnmap| awk '{print$ 2}' >> $name/tmp
         grep "Up" $name/livehosts_4_$name.gnmap| awk '{print$ 2}' >> $name/tmp
         grep "Up" $name/livehosts_5_$name.gnmap| awk '{print$ 2}' >> $name/tmp
-        grep "Up" $name/livehosts_6_$name.gnmap| awk '{print$ 2}' >> $name/tmp
 
 
         cat $name/fping_results_$name.txt >> $name/tmp
@@ -321,7 +325,7 @@ do
         echo -e "${blue}\n---------------------------------------------$host--------------------------------------------------------\n${endc}"
         mkdir -p $host/tcp
 
-        nmap -vv -p- -sS -Pn -n --open --defeat-rst-ratelimit --max-retries 3 --host-timeout 90m -oA $host/tcp/all_tcp_ports $host
+        nmap -vv -p- -sS -Pn -n --open --defeat-rst-ratelimit --host-timeout 60m -oA $host/tcp/all_tcp_ports $host
 
         ports=`awk '/ open / && /tcp/ {print $1}' $host/tcp/all_tcp_ports.nmap | awk -F "/" '{printf "%s,",$1}' | sed 's/.$//'`
 
@@ -452,7 +456,58 @@ secs_to_human() {
     echo -e "\nTime Elapsed : ${min} minutes and ${secs} seconds."
 }
 
+nessus_grep() {
+    while read -r host
+    do
+        ports=`awk '/ open / && /tcp/ {print $1}' $host/tcp/all_tcp_ports.nmap | awk -F "/" '{printf "%s,",$1}' | sed 's/.$//'`
+        portsudp=`awk '/ open / && /udp/ {print $1}' $host/udp/top1000_udp_ports.nmap | awk -F "/" '{printf "%s,",$1}' | sed 's/.$//'`
 
+        if [ -n "$ports" ];then
+                
+                awk '/ open / && /tcp/ {print $1}' $host/tcp/all_tcp_ports.nmap | awk -F "/" '{print $1}' >> .nessus_tcp_ports
+                echo -e $host >> .nessus_hosts
+                echo -e $host >> .nessus_udp_hosts
+                awk '/ open / && /udp/ {print $1}' $host/udp/top1000_udp_ports.nmap |  awk -F "/" '{print $1}' >> .nessus_udp_ports
+
+        else
+                echo -e $host >> .no_open_tcp_ports
+                no_open_tcp_ports_flags=1
+        fi
+    done < $hosts_file
+
+    nessus_ports=`cat .nessus_tcp_ports | sort -un | awk '{printf "%s,",$1}' | sed 's/.$//'`
+    nessus_hosts=`cat .nessus_hosts | sort -u | awk '{printf "%s,",$1}' | sed 's/.$//'`
+    nessus_udp_hosts=`cat .nessus_udp_hosts | sort -u | awk '{printf "%s,",$1}' | sed 's/.$//'`
+
+    if [ -f ".nessus_udp_ports" ]
+    then
+        nessus_udp_ports=`cat .nessus_udp_ports | sort -un | awk '{printf "%s,",$1}' | sed 's/.$//'`
+        echo -e "\n${blue}[*]${endc} UDP Hosts for nessus -> $nessus_udp_hosts"
+        echo -e "${blue}[*]${endc} UDP Ports for nessus -> $nessus_udp_ports\n"      
+    else
+        echo -e "\n${red}[-]${endc} No Open UDP Ports for nessus"
+        echo -e "${blue}[*]${endc} IPs Scanned -> $nessus_udp_hosts\n"
+    fi
+
+    echo -e "\n${blue}[*]${endc} TCP Hosts for nessus -> $nessus_hosts"
+    echo -e "${blue}[*]${endc} TCP Ports for nessus -> $nessus_ports"
+
+
+
+    if [ "$no_open_tcp_ports_flags" != 0 ]
+    then
+        no_open_tcp_ports=`cat .no_open_tcp_ports | sort -u | awk '{printf "%s,",$1}' | sed 's/.$//'`
+        echo -e "${red}[-]${endc} No open ports -> $no_open_tcp_ports\n"
+    fi
+
+
+    rm .nessus_udp_ports .nessus_udp_hosts .nessus_tcp_ports .no_open_tcp_ports .nessus_hosts 2>/dev/null
+
+    sleep 2
+
+
+
+}
 
 
 ssh_check() {
@@ -688,7 +743,15 @@ then
         else
                 echo -e "\n${red}[-] ${endc}The file \"$hosts_file\" does not exist."
         fi
+elif [ "nessus_flag" != 0 ]
+then
+    if [ -f "$hosts_file" ]
+    then
+        nessus_grep
 
+    else
+        echo -e "\n${red}[-] ${endc}The file \"$hosts_file\" does not exist."
+    fi
 elif [[ "$port_scan" != 0 && "$hosts_flag" != 0 ]]
 then
         if [ -f "$hosts_file" ]

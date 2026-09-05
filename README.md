@@ -1,6 +1,6 @@
 ![image](https://user-images.githubusercontent.com/83140947/200195818-5d7b369a-0173-417d-abd8-553115a0c877.png)
 
-# Raider Scanner v3.1
+# Raider Scanner v3.2
 ## Description
 A simple tool for Pentesters that combines and runs nmap scans and much more..
 ***
@@ -31,15 +31,16 @@ OPTIONS:
         -r, --restore   Restore the previous session
         -h, --help      Help Menu
 
-        SSH private key spray to hosts
+        SSH private key spray to hosts:
         -f, --file      The file with hosts (one by one in line)
         -i, --identity  The private ssh identity file
         -s, --ssh [username]The username to use for authentication 
 
-        Web Scanning, Whatweb and eyewitness
+        Web Scanning, Whatweb and eyewitness:
         -f, --file      The file with hosts (one by one in line)
         -w, --web       Use web scanning
-
+        Nessus output:
+        --nessus        Grep the hosts and ports for nessus
 
 EXAMPLES:
 
@@ -59,6 +60,9 @@ raider -f ssh_spray.txt --ssh root -i id_rsa
 
 WEB Scanning:
 raider -f all_live_hosts.txt -w
+
+Grep For Nessus
+raider -f all_live_hosts.txt --nessus
 
 Combined Scans:
 raider -d subnets.txt; raider -f all_live_hosts.txt -t -u -w
