@@ -235,12 +235,11 @@ echo -e "${blue}
 ██╔══██╗██╔══██║██║██║  ██║██╔══╝  ██╔══██╗    ╚════██║██║     ██╔══██║██║╚██╗██║██║╚██╗██║██╔══╝  ██╔══██╗
 ██║  ██║██║  ██║██║██████╔╝███████╗██║  ██║    ███████║╚██████╗██║  ██║██║ ╚████║██║ ╚████║███████╗██║  ██║
 ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝    ╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝${fcyan}
-                                                                                                _____  ____  
-                                                                                         __   _|___ / |___ \ 
-                                                                                         \ \ / / |_ \   __) |
-                                                                                          \ V / ___) | / __/ 
-                                                                                           \_/ |____(_)_____|
-                                                                                                             
+                                                                                                _____  _____ 
+                                                                                         __   _|___ / |___ / 
+                                                                                         \ \ / / |_ \   |_ \ 
+                                                                                          \ V / ___) | ___) |
+                                                                                           \_/ |____(_)____/                                                                                         
 ${red}
                                         ⠀⠀⠀⠀⠀⠀⠀⣠⣤⡀⠀⠀⢀⣤⣀⠀⠀⠀⠀⠀⠀⠀
                                         ⠀⠀⠀⠀⠀⣠⣾⣿⡿⠁⠀⠀⠈⢿⣿⣷⣄⠀⠀⠀⠀⠀
@@ -260,7 +259,7 @@ ${red}
 ${endc}"
 sleep 2
 # ANSI Shadow
-# https://patorjk.com/software/taag/#p=display&h=2&v=3&f=Standard&t=v3.2
+# https://patorjk.com/software/taag/#p=display&h=2&v=3&f=Standard&t=v3.3
 }
 
 
@@ -325,7 +324,7 @@ do
         echo -e "${blue}\n---------------------------------------------$host--------------------------------------------------------\n${endc}"
         mkdir -p $host/tcp
 
-        nmap -vv -p- -sS -Pn -n --open --defeat-rst-ratelimit --host-timeout 60m -oA $host/tcp/all_tcp_ports $host
+        nmap -vv -p- -sT -Pn -n --open --defeat-rst-ratelimit --host-timeout 40m -oA $host/tcp/all_tcp_ports $host
 
         ports=`awk '/ open / && /tcp/ {print $1}' $host/tcp/all_tcp_ports.nmap | awk -F "/" '{printf "%s,",$1}' | sed 's/.$//'`
 
@@ -399,7 +398,7 @@ do
         echo -e "${blue}\n---------------------------------------------$host--------------------------------------------------------\n${endc}"
         mkdir -p $host/udp
 
-        nmap -sU -Pn -n --top-ports 10000 --open --defeat-icmp-ratelimit --defeat-rst-ratelimit --max-retries 2 $host -oA $host/udp/top1000_udp_ports
+        nmap -sU -Pn -n --top-ports 1000 --open --defeat-icmp-ratelimit --defeat-rst-ratelimit --max-retries 2 $host -oA $host/udp/top1000_udp_ports
         portsudp=`awk '/ open / && /udp/ {print $1}' $host/udp/top1000_udp_ports.nmap | awk -F "/" '{printf "%s,",$1}' | sed 's/.$//'`
 
         if [ -n "$portsudp" ];then
@@ -632,7 +631,7 @@ sleep 3
 
 # eyewitness
 
-awk '{print $1}' what_web/http*results_no_color.txt | sort -u > .eyewitn_file
+awk '{print $1}' what_web/http*results_no_color.txt | awk -F "/" '{print $1"/"$2"/"$3}' | sort -u > .eyewitn_file
 
 echo -e "${blue}[*]${endc} Performing Eyewitness Recon"
 
@@ -666,7 +665,7 @@ then
         INTERFACE_IP=$(hostname -I | awk '{print $1}')
 fi
 
-sudo -u $NON_ROOT_USER eyewitness -f .eyewitn_file --no-prompt --no-dns --max-retries 2 --threads 2 --delay 2 --timeout 20 -d /var/www/html/eyewitness_results
+sudo -u $NON_ROOT_USER eyewitness -f .eyewitn_file --no-prompt --no-dns --max-retries 2 --threads 2 --jitter 2 --delay 2 --timeout 20 -d /var/www/html/eyewitness_results
 
 if ! systemctl is-active --quiet apache2; then
     echo -e "${yellow}[!]${endc} Apache2 is not running. Starting Apache2..."
