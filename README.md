@@ -1,75 +1,95 @@
-![image](https://user-images.githubusercontent.com/83140947/200195818-5d7b369a-0173-417d-abd8-553115a0c877.png)
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/83140947/200195818-5d7b369a-0173-417d-abd8-553115a0c877.png" alt="Raider Scanner Logo">
+  
+  # 🏴‍☠️ Raider Scanner v3.4
 
-# Raider Scanner v3.3
-## Description
-A simple tool for Pentesters that combines and runs nmap scans and much more..
-***
-## Installation:
+  ![Version](https://img.shields.io/badge/version-v3.4-blue.svg)
+  ![Bash](https://img.shields.io/badge/language-bash-green.svg)
+  ![Platform](https://img.shields.io/badge/platform-linux-lightgrey.svg)
+</div>
+## 📖 Description
+**Raider** is a streamlined automation tool designed for Pentesters. It combines multiple reconnaissance phases into a single, cohesive workflow, saving time and keeping your output organized.
 
+### ✨ Features:
+* **Host Discovery:** Fast, firewall-evading ping sweeps across multiple subnets/VLANs.
+* **Port Scanning:** Automated TCP and UDP Nmap scans on discovered hosts.
+* **Web Reconnaissance:** Automated integration with WhatWeb and EyeWitness.
+* **SSH Spraying:** Test private keys against all discovered active hosts.
+* **Nessus Parsing:** Format and grep outputs cleanly for Nessus imports.
+
+---
+## ⚙️ Installation
+
+Clone the repository and create a symbolic link so you can run it from anywhere:
 ```bash
 git clone git@github.com:Mr-PeterB/RaiderScanner.git
 sudo ln -s $(pwd)/RaiderScanner/raider /usr/local/bin/
 ```
 ***
-## Usage:
+## 🖥️ Usage & Help Menu:
 ```
 USAGE:
-
         raider [options]
 
 OPTIONS:
-        Host Discovery:
-        -d, --discovery Find alive hosts on several subnets.
-                        (Read a text file with the subnets in it
-                         Format: 10.0.1.0/24
-                                 192.168.1.0/24
-                                 10.11.55.0/24)
-        Port Scanning:
-        -f, --file      The file with hosts (one by one in line)
-        -t, --tcp       Use tcp scans
-        -u, --udp       Use udp scans
-        -r, --restore   Restore the previous session
-        -h, --help      Help Menu
 
-        SSH private key spray to hosts:
-        -f, --file      The file with hosts (one by one in line)
-        -i, --identity  The private ssh identity file
-        -s, --ssh [username]The username to use for authentication 
+    Host Discovery:
+        -d, --discovery    Find alive hosts across specified subnets.
+        -f, --file <file>  Input file containing subnets (one per line).
+                           Format example:
+                             10.0.1.0/24
+                             192.168.1.0/24
+        -e, --extended     Use extended discovery techniques if ICMP (ping) is blocked.
+        --ee               Perform live host discovery by doing port scan.
 
-        Web Scanning, Whatweb and eyewitness:
-        -f, --file      The file with hosts (one by one in line)
-        -w, --web       Use web scanning
-        Nessus output:
-        --nessus        Grep the hosts and ports for nessus
+    Port Scanning:
+        -f, --file <file>  Input file containing target hosts (one per line).
+        -t, --tcp          Perform TCP port scans.
+        -u, --udp          Perform UDP port scans.
+        -r, --restore      Restore the previous scanning session.
+
+    SSH Authentication:
+        -f, --file <file>  Input file containing target hosts (one per line).
+        -i, --identity     Path to the private SSH key file (e.g., id_rsa).
+        -s, --ssh <user>   The username to use for SSH authentication.
+
+    Web Reconnaissance:
+        -f, --file <file>  Input file containing target hosts (one per line).
+        -w, --web          Run WhatWeb and EyeWitness to gather and organize web pages.
+
+    Output Formatting:
+        --nessus           Format and grep discovered hosts/ports for Nessus import.
+
+    Global Options:
+        -h, --help         Display this help menu and exit.
 
 EXAMPLES:
 
-Discover Live Hosts on vlans
-raider -d subnets.txt
+    Discover Live Hosts (VLANs):
+        raider -f subnets.txt -d
+        raider -f subnets.txt -d -e
 
-Port Scanning TCP / UDP
-raider -f hostses.txt -t
-raider -f hostses.txt -u
-raider -f hostses.txt -t -u
+    Port Scanning (TCP / UDP):
+        raider -f hosts.txt -t
+        raider -f hosts.txt -u
+        raider -f hosts.txt -t -u
 
-Restore tcp/udp scan:
-raider -r
+    Restore TCP/UDP scan:
+        raider -r
 
-SSH:
-raider -f ssh_spray.txt --ssh root -i id_rsa
+    SSH Spraying:
+        raider -f hosts.txt -s root -i ~/.ssh/id_rsa
 
-WEB Scanning:
-raider -f all_live_hosts.txt -w
+    Web Scanning:
+        raider -f all_live_hosts.txt -w
 
-Grep For Nessus
-raider -f all_live_hosts.txt --nessus
-
-Combined Scans:
-raider -d subnets.txt; raider -f all_live_hosts.txt -t -u -w
+    Format for Nessus:
+        raider -f all_live_hosts.txt --nessus
 ```
 ***
-## For Host Discovery
-We write into a .txt file the subnets we want to scan for alive hosts:
+
+## 📡 1. Host Discovery
+First, create a *.txt* file containing the subnets you want to scan for live hosts:
 ```
 $ cat subnets.txt
 192.168.1.0/24
@@ -77,11 +97,11 @@ $ cat subnets.txt
 10.1.0.0/16
 10.6.6.0/26
 ```
-And then run the command
+Then, run the discovery command. (Note: Requires sudo for raw packet privileges).
 ```bash
-sudo ./raider -d subnets.txt
+sudo raider -f subnets.txt -d
 ```
-Results:
+📝 Results:
 ```
 $ ls
 192.168.1.0_24
@@ -90,18 +110,19 @@ $ ls
 10.6.6.0_26
 all_live_hosts.txt
 ```
-The "all_live_hosts.txt" contains the alive hosts from all the subnets.
-## For tcp scan:
-We can use the following command for the previous file to perform tcp scan to all live hosts:
+The tool automatically generates an *all_live_hosts.txt* file containing a consolidated list of every active IP found across all subnets.
+
+## 🚪 2. TCP Port Scan
+You can pass the consolidated output file directly back into Raider to perform a TCP scan on the live hosts:
 ```bash
-sudo ./raider -f all_live_hosts.txt -t
+sudo raider -f all_live_hosts.txt -t
 ```
-## For tcp and udp:
+## ⚡ 3. TCP & UDP Port Scan
 ```bash
-sudo ./raider -f all_live_hosts.txt -t -u
+sudo raider -f all_live_hosts.txt -t -u
 ```
-## Extra Tip
-**If you have subnets into scope then you can run with root** 
+## 💡 4. Pro-Tip: Chaining Commands
+If you have multiple subnets in scope, you can chain the host discovery and port scanning commands together to fully automate your initial network reconnaissance in one line:
 ```bash
-./raider -d subnets.txt; ./raider -f all_live_hosts.txt -t -u
+sudo raider -f subnets.txt -d; sudo raider -f all_live_hosts.txt -t -u
 ```

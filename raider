@@ -48,6 +48,8 @@ all_down=true
 total_ports=""
 no_open_tcp_ports_flags=0
 nessus_flag=0
+extended_flag=0
+extended_flag2=0
 
 #Distros vars
 nmap_version_no_http=(
@@ -95,54 +97,62 @@ help () {
 
 echo -e "
 USAGE:
-
         raider [options]
 
 OPTIONS:
-        Host Discovery:
-        -d, --discovery Find alive hosts on several subnets.
-                        (Read a text file with the subnets in it
-                         Format: 10.0.1.0/24
-                                 192.168.1.0/24
-                                 10.11.55.0/24)
-        Port Scanning:
-        -f, --file      The file with hosts (one by one in line)
-        -t, --tcp       Use tcp scans
-        -u, --udp       Use udp scans
-        -r, --restore   Restore the previous session
-        -h, --help      Help Menu
 
-        SSH private key spray to hosts
-        -f, --file      The file with hosts (one by one in line)
-        -i, --identity  The private ssh identity file
-        -s, --ssh [username]The username to use for authentication 
+    Host Discovery:
+        -d, --discovery    Find alive hosts across specified subnets.
+        -f, --file <file>  Input file containing subnets (one per line).
+                           Format example:
+                             10.0.1.0/24
+                             192.168.1.0/24
+        -e, --extended     Use extended discovery techniques if ICMP (ping) is blocked.
+        --ee               Perform live host discovery by doing port scan.
 
-        Web Scanning, Whatweb and eyewitness
-        -f, --file      The file with hosts (one by one in line)
-        -w, --web       Use web scanning
+    Port Scanning:
+        -f, --file <file>  Input file containing target hosts (one per line).
+        -t, --tcp          Perform TCP port scans.
+        -u, --udp          Perform UDP port scans.
+        -r, --restore      Restore the previous scanning session.
 
+    SSH Authentication:
+        -f, --file <file>  Input file containing target hosts (one per line).
+        -i, --identity     Path to the private SSH key file (e.g., id_rsa).
+        -s, --ssh <user>   The username to use for SSH authentication.
+
+    Web Reconnaissance:
+        -f, --file <file>  Input file containing target hosts (one per line).
+        -w, --web          Run WhatWeb and EyeWitness to gather and organize web pages.
+
+    Output Formatting:
+        --nessus           Format and grep discovered hosts/ports for Nessus import.
+
+    Global Options:
+        -h, --help         Display this help menu and exit.
 
 EXAMPLES:
 
-Discover Live Hosts on vlans
-$program_name -d subnets.txt
+    Discover Live Hosts (VLANs):
+        $program_name -f subnets.txt -d
+        $program_name -f subnets.txt -d -e
 
-Port Scanning TCP / UDP
-$program_name -f hostses.txt -t
-$program_name -f hostses.txt -u
-$program_name -f hostses.txt -t -u
+    Port Scanning (TCP / UDP):
+        $program_name -f hosts.txt -t
+        $program_name -f hosts.txt -u
+        $program_name -f hosts.txt -t -u
 
-Restore tcp/udp scan:
-$program_name -r
+    Restore TCP/UDP scan:
+        $program_name -r
 
-SSH:
-$program_name -f ssh_spray.txt --ssh root -i id_rsa
+    SSH Spraying:
+        $program_name -f hosts.txt -s root -i ~/.ssh/id_rsa
 
-WEB Scanning:
-$program_name -f all_live_hosts.txt -w
+    Web Scanning:
+        $program_name -f all_live_hosts.txt -w
 
-Combined Scans:
-$program_name -d subnets.txt; $program_name -f all_live_hosts.txt -t -u -w
+    Format for Nessus:
+        $program_name -f all_live_hosts.txt --nessus
 "
 exit 1
 }
@@ -169,8 +179,14 @@ flags () {
         case "$1" in
         -d|--discovery)
             disc_flag=1
-            disc_file=$2
             shift
+            ;;
+        -e| --extended)
+            extended_flag=1
+            shift
+            ;;
+        -ee)
+            extended_flag2=1
             shift
             ;;
         -f|--file)
@@ -235,11 +251,11 @@ echo -e "${blue}
 ██╔══██╗██╔══██║██║██║  ██║██╔══╝  ██╔══██╗    ╚════██║██║     ██╔══██║██║╚██╗██║██║╚██╗██║██╔══╝  ██╔══██╗
 ██║  ██║██║  ██║██║██████╔╝███████╗██║  ██║    ███████║╚██████╗██║  ██║██║ ╚████║██║ ╚████║███████╗██║  ██║
 ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝    ╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝${fcyan}
-                                                                                                _____  _____ 
-                                                                                         __   _|___ / |___ / 
-                                                                                         \ \ / / |_ \   |_ \ 
-                                                                                          \ V / ___) | ___) |
-                                                                                           \_/ |____(_)____/                                                                                         
+                                                                                                _____ _  _   
+                                                                                         __   _|___ /| || |  
+                                                                                         \ \ / / |_ \| || |_ 
+                                                                                          \ V / ___) |__   _|
+                                                                                           \_/ |____(_) |_|                                                                                                      
 ${red}
                                         ⠀⠀⠀⠀⠀⠀⠀⣠⣤⡀⠀⠀⢀⣤⣀⠀⠀⠀⠀⠀⠀⠀
                                         ⠀⠀⠀⠀⠀⣠⣾⣿⡿⠁⠀⠀⠈⢿⣿⣷⣄⠀⠀⠀⠀⠀
@@ -259,7 +275,7 @@ ${red}
 ${endc}"
 sleep 2
 # ANSI Shadow
-# https://patorjk.com/software/taag/#p=display&h=2&v=3&f=Standard&t=v3.3
+# https://patorjk.com/software/taag/#p=display&h=2&v=3&f=Standard&t=v3.4
 }
 
 
@@ -272,22 +288,29 @@ do
         echo -e "\n${lblue}-------- Scanning subnet $subs ----------${endc}\n"
 
         name=${subs/\//_}
-        mkdir $name
-        #nmap -n -PR -PS80,443 -PA3389 -PU53,161,123 -oA $name/livehosts_1_$name $subs
-        #nmap -n -sn -PO -oA $name/livehosts_2_$name $subs
-        nmap -n -sn -PP -oA $name/livehosts_3_$name $subs
-        nmap -n -sn -PM -oA $name/livehosts_4_$name $subs
-        nmap -n -sn -PE -oA $name/livehosts_5_$name $subs
-        fping -agq $subs | tee -a $name/fping_results_$name.txt
+        mkdir $name 2>/dev/null
 
-        grep "Up" $name/livehosts_1_$name.gnmap| awk '{print$ 2}' >> $name/tmp
-        grep "Up" $name/livehosts_2_$name.gnmap| awk '{print$ 2}' >> $name/tmp
-        grep "Up" $name/livehosts_3_$name.gnmap| awk '{print$ 2}' >> $name/tmp
-        grep "Up" $name/livehosts_4_$name.gnmap| awk '{print$ 2}' >> $name/tmp
-        grep "Up" $name/livehosts_5_$name.gnmap| awk '{print$ 2}' >> $name/tmp
+        if [[ "$extended_flag" != 0 ]]
+        then
+            nmap -sn -n -PR -PS22,445,80,443 -PA22,445,80,443 -PU31338 -vv -oA $name/livehosts_ex1_$name $subs
+            grep "Up" $name/livehosts_ex1_$name.gnmap| awk '{print$ 2}' >> $name/tmp
 
+        elif [[ "$extended_flag2" != 0 ]]
+        then
+            nmap -n --top-ports 80 -Pn -sT -vv --open -oA $name/livehosts_ex2_$name $subs
+            grep "Up" $name/livehosts_ex2_$name.gnmap| awk '{print$ 2}' >> $name/tmp
+ 
+        else
+            nmap -n -sn -PP -vv -oA $name/livehosts_1_$name $subs
+            nmap -n -sn -PM -vv -oA $name/livehosts_2_$name $subs
+            nmap -n -sn -PE -vv -oA $name/livehosts_3_$name $subs
+            fping -agq $subs | tee -a $name/fping_results_$name.txt
+        fi
+        grep "Up" $name/livehosts_1_$name.gnmap 2>/dev/null | awk '{print$ 2}' >> $name/tmp
+        grep "Up" $name/livehosts_2_$name.gnmap 2>/dev/null | awk '{print$ 2}' >> $name/tmp 
+        grep "Up" $name/livehosts_3_$name.gnmap 2>/dev/null | awk '{print$ 2}' >> $name/tmp
 
-        cat $name/fping_results_$name.txt >> $name/tmp
+        cat $name/fping_results_$name.txt >> "$name/tmp" 2>/dev/null
 
         cat $name/tmp | sort -u > $name/all_live_hosts_$name.txt
         rm $name/tmp
@@ -297,7 +320,7 @@ do
         rm .tmp
         alive=`wc -l < $name/all_live_hosts_$name.txt`
         echo -e "\n${green}[+]${endc} Alive hosts: ${green}$alive${endc} (file: \"$name/all_live_hosts_$name.txt\")"
-done < $disc_file
+done < $hosts_file
 
 alive=`wc -l < all_live_hosts.txt`
 
@@ -711,20 +734,18 @@ flags "$@"
 
 
 
-if [ "$disc_flag" != 0 ]
+if [[ "$disc_flag" != 0 && "$hosts_flag" != 0 ]]
 then
-        if [ "$disc_flag" != 0 ]
-        then
-                if [ -f "$disc_file" ]
-                then
-                        echo -e "\n${blue}[*]${endc} Checking dependencies..\n"
-                        check_dependecies nmap
-                        DeadOrAlive
-                        exit 0
-                else
-                         echo -e "\n${red}[-] ${endc}The file \"$disc_file\" does not exist."
-                fi
-        fi
+    if [ -f "$hosts_file" ]
+    then
+        echo -e "\n${blue}[*]${endc} Checking dependencies..\n"
+        check_dependecies nmap
+        check_dependecies fping
+        DeadOrAlive
+        exit 0
+    else
+        echo -e "\n${red}[-] ${endc}The file \"$hosts_file\" does not exist."
+    fi
 
 elif [ "$ssh_flag" != 0 ]
 then
