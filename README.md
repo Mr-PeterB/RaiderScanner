@@ -7,6 +7,7 @@
   ![Bash](https://img.shields.io/badge/language-bash-green.svg)
   ![Platform](https://img.shields.io/badge/platform-linux-lightgrey.svg)
 </div>
+
 ## 📖 Description
 **Raider** is a streamlined automation tool designed for Pentesters. It combines multiple reconnaissance phases into a single, cohesive workflow, saving time and keeping your output organized.
 
