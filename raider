@@ -763,7 +763,7 @@ then
         else
                 echo -e "\n${red}[-] ${endc}The file \"$hosts_file\" does not exist."
         fi
-elif [ "nessus_flag" != 0 ]
+elif [ "$nessus_flag" != 0 ]
 then
     if [ -f "$hosts_file" ]
     then
