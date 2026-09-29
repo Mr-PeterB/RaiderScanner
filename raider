@@ -251,11 +251,11 @@ echo -e "${blue}
 ██╔══██╗██╔══██║██║██║  ██║██╔══╝  ██╔══██╗    ╚════██║██║     ██╔══██║██║╚██╗██║██║╚██╗██║██╔══╝  ██╔══██╗
 ██║  ██║██║  ██║██║██████╔╝███████╗██║  ██║    ███████║╚██████╗██║  ██║██║ ╚████║██║ ╚████║███████╗██║  ██║
 ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝    ╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝${fcyan}
-                                                                                                _____ _  _   
-                                                                                         __   _|___ /| || |  
-                                                                                         \ \ / / |_ \| || |_ 
-                                                                                          \ V / ___) |__   _|
-                                                                                           \_/ |____(_) |_|                                                                                                      
+                                                                                                _____  ____  
+                                                                                         __   _|___ / | ___| 
+                                                                                         \ \ / / |_ \ |___ \ 
+                                                                                          \ V / ___) | ___) |
+                                                                                           \_/ |____(_)____/                                                                                                  
 ${red}
                                         ⠀⠀⠀⠀⠀⠀⠀⣠⣤⡀⠀⠀⢀⣤⣀⠀⠀⠀⠀⠀⠀⠀
                                         ⠀⠀⠀⠀⠀⣠⣾⣿⡿⠁⠀⠀⠈⢿⣿⣷⣄⠀⠀⠀⠀⠀
@@ -275,7 +275,7 @@ ${red}
 ${endc}"
 sleep 2
 # ANSI Shadow
-# https://patorjk.com/software/taag/#p=display&h=2&v=3&f=Standard&t=v3.4
+# https://patorjk.com/software/taag/#p=display&h=2&v=3&f=Standard&t=v3.5
 }
 
 
@@ -630,12 +630,14 @@ echo -e "${blue}[*]${endc} Checking Whatweb Requests"
 mkdir what_web 2> /dev/null
 while read -r url
 do
+        echo -e "${blue}[*]${endc} Checking $url" 
         timeout 5 whatweb $url | tee -a what_web/http_results.txt
  
 done < .http_checks
 
 while read -r url
 do
+        echo -e "${blue}[*]${endc} Checking $url" 
         timeout 5 whatweb $url | tee -a what_web/https_results.txt
 
 
