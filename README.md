@@ -1,7 +1,7 @@
 <div align="center">
   <img src="https://user-images.githubusercontent.com/83140947/200195818-5d7b369a-0173-417d-abd8-553115a0c877.png" alt="Raider Scanner Logo">
   
-  # 🏴‍☠️ Raider Scanner v3.6
+  # 🏴‍☠️ Raider Scanner v3.7
 
   ![Version](https://img.shields.io/badge/version-v3.4-blue.svg)
   ![Bash](https://img.shields.io/badge/language-bash-green.svg)

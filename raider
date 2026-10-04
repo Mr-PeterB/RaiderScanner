@@ -257,11 +257,11 @@ echo -e "${blue}
 ██╔══██╗██╔══██║██║██║  ██║██╔══╝  ██╔══██╗    ╚════██║██║     ██╔══██║██║╚██╗██║██║╚██╗██║██╔══╝  ██╔══██╗
 ██║  ██║██║  ██║██║██████╔╝███████╗██║  ██║    ███████║╚██████╗██║  ██║██║ ╚████║██║ ╚████║███████╗██║  ██║
 ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝    ╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝${fcyan}
-                                                                                                _____  __   
-                                                                                         __   _|___ / / /_  
-                                                                                         \ \ / / |_ \| '_ \ 
-                                                                                          \ V / ___) | (_) |
-                                                                                           \_/ |____(_)___/                                                                                                  
+                                                                                                _____ _____ 
+                                                                                         __   _|___ /|___  |
+                                                                                         \ \ / / |_ \   / / 
+                                                                                          \ V / ___) | / /  
+                                                                                           \_/ |____(_)_/                                                                                                    
 ${red}
                                         ⠀⠀⠀⠀⠀⠀⠀⣠⣤⡀⠀⠀⢀⣤⣀⠀⠀⠀⠀⠀⠀⠀
                                         ⠀⠀⠀⠀⠀⣠⣾⣿⡿⠁⠀⠀⠈⢿⣿⣷⣄⠀⠀⠀⠀⠀
@@ -281,7 +281,7 @@ ${red}
 ${endc}"
 sleep 2
 # ANSI Shadow
-# https://patorjk.com/software/taag/#p=display&h=2&v=3&f=Standard&t=v3.6
+# https://patorjk.com/software/taag/#p=display&h=2&v=3&f=Standard&t=v3.7
 }
 
 
@@ -498,7 +498,7 @@ do
         if [ -n "$ports" ];then
 
                 all_down=false
-                nmap -sV -Pn -p$ports -oA $host/tcp/full_tcp_scan $host
+                nmap -sV -Pn -p$ports -oA $host/tcp/full_tcp_quick_scan $host
                 #nmap -p$ports -Pn --script "(default or vuln or version) and safe" -oA $host/tcp/safe_scripts $host
                 #nmap -p$ports -Pn --script "(default or vuln or version or external or discovery) and safe" -oA $host/tcp/safe_scripts $host
                 #nmap --script "(vuln and safe)" -Pn -p$ports -oA $host/tcp/script_vuln $host
@@ -656,11 +656,11 @@ function raider_webapp_recon() {
 
 while read -r ip
 do
-        if [[ -f "${ip}/tcp/all_tcp_ports.nmap" ]]
+        if compgen -G "${ip}/tcp/*tcp_ports.nmap"> /dev/null
         then
-                if [[ -f "${ip}/tcp/full_tcp_scan.nmap" ]]
+                if compgen -G "${ip}/tcp/full_tcp*_scan.nmap" > /dev/null
                 then
-                        grep " open " ${ip}/tcp/full_tcp_scan.nmap -H >> .open_tcp_ports
+                        grep " open " ${ip}/tcp/full_tcp*_scan.nmap -H >> .open_tcp_ports
                 else
                         echo -e "${red}[-]${endc} No possible http/https open ports found for $ip"
                 fi
