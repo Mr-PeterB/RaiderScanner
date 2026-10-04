@@ -114,6 +114,7 @@ OPTIONS:
         -f, --file <file>  Input file containing target hosts (one per line).
         -t, --tcp          Perform TCP port scans.
         -u, --udp          Perform UDP port scans.
+        -q, --quick-scan   Perform Quick Port Scanning to 13 ports.
         -r, --restore      Restore the previous scanning session.
 
     SSH Authentication:
@@ -205,6 +206,11 @@ flags () {
             port_scan=1
             shift
             ;;
+        -q|--quick-scan)
+            quickscan_flag=1
+            port_scan=1
+            shift
+            ;;
         -r|--restore)
             restore_flag=1
             shift
@@ -251,11 +257,11 @@ echo -e "${blue}
 ██╔══██╗██╔══██║██║██║  ██║██╔══╝  ██╔══██╗    ╚════██║██║     ██╔══██║██║╚██╗██║██║╚██╗██║██╔══╝  ██╔══██╗
 ██║  ██║██║  ██║██║██████╔╝███████╗██║  ██║    ███████║╚██████╗██║  ██║██║ ╚████║██║ ╚████║███████╗██║  ██║
 ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝    ╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝${fcyan}
-                                                                                                _____  ____  
-                                                                                         __   _|___ / | ___| 
-                                                                                         \ \ / / |_ \ |___ \ 
-                                                                                          \ V / ___) | ___) |
-                                                                                           \_/ |____(_)____/                                                                                                  
+                                                                                                _____  __   
+                                                                                         __   _|___ / / /_  
+                                                                                         \ \ / / |_ \| '_ \ 
+                                                                                          \ V / ___) | (_) |
+                                                                                           \_/ |____(_)___/                                                                                                  
 ${red}
                                         ⠀⠀⠀⠀⠀⠀⠀⣠⣤⡀⠀⠀⢀⣤⣀⠀⠀⠀⠀⠀⠀⠀
                                         ⠀⠀⠀⠀⠀⣠⣾⣿⡿⠁⠀⠀⠈⢿⣿⣷⣄⠀⠀⠀⠀⠀
@@ -275,7 +281,7 @@ ${red}
 ${endc}"
 sleep 2
 # ANSI Shadow
-# https://patorjk.com/software/taag/#p=display&h=2&v=3&f=Standard&t=v3.5
+# https://patorjk.com/software/taag/#p=display&h=2&v=3&f=Standard&t=v3.6
 }
 
 
@@ -463,6 +469,69 @@ else
 fi
 
 rm .restore_udp_raider .restore_udp_raider2 .nessus_udp_ports .nessus_udp_hosts 2>/dev/null
+
+}
+
+quick_scan () {
+
+if [ $hosts_file = ".restore_quickscan_raider" ]
+then
+        backup_file=".restore_quickscan_raider2"
+else
+        backup_file=".restore_quickscan_raider"
+fi
+
+echo -e "${lblue}[*] ${endc}Using file = $hosts_file"
+echo -e "${lblue}[*] ${endc}Backup file = $backup_file"
+echo -e "\n"
+cat $hosts_file > $backup_file
+
+while read -r host
+do
+        echo -e "${blue}\n---------------------------------------------$host--------------------------------------------------------\n${endc}"
+        mkdir -p $host/tcp
+
+        nmap -vv -p21,80,443,445,554,631,1433,3306,5432,5433,5900,8080,50001 -sS -Pn -n --open --defeat-rst-ratelimit --host-timeout 17m -oA $host/tcp/quickscan_tcp_ports $host
+
+        ports=`awk '/ open / && /tcp/ {print $1}' $host/tcp/quickscan_tcp_ports.nmap | awk -F "/" '{printf "%s,",$1}' | sed 's/.$//'`
+
+        if [ -n "$ports" ];then
+
+                all_down=false
+                nmap -sV -Pn -p$ports -oA $host/tcp/full_tcp_scan $host
+                #nmap -p$ports -Pn --script "(default or vuln or version) and safe" -oA $host/tcp/safe_scripts $host
+                #nmap -p$ports -Pn --script "(default or vuln or version or external or discovery) and safe" -oA $host/tcp/safe_scripts $host
+                #nmap --script "(vuln and safe)" -Pn -p$ports -oA $host/tcp/script_vuln $host
+
+                #add all the nmaps you want!!
+                
+        else
+                echo -e $host >> .no_open_tcp_ports
+                no_open_tcp_ports_flags=1
+        fi
+
+        grep -vw "$host" $backup_file > .tmp
+        cat .tmp > $backup_file
+        rm .tmp
+
+
+
+done < $hosts_file
+
+
+echo -e "\n\n${blue}
+------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------${endc}"
+
+if [ "$no_open_tcp_ports_flags" != 0 ]
+then
+        no_open_tcp_ports=`cat .no_open_tcp_ports | sort -u | awk '{printf "%s,",$1}' | sed 's/.$//'`
+        echo -e "${red}[-]${endc} No open ports -> $no_open_tcp_ports\n"
+fi
+
+rm .restore_tcp_raider .restore_tcp_raider2 .nessus_tcp_ports .no_open_tcp_ports .nessus_hosts 2>/dev/null
+
+sleep 2
 
 }
 
@@ -780,6 +849,12 @@ then
         then
                 echo -e "\n${blue}[*]${endc} Checking dependencies..\n"
                 check_dependecies nmap
+
+                if [ "$quickscan_flag" != 0 ]
+                then
+                        rm .restore_quickscan_raider .restore_quickscan_raider2 2>/dev/null
+                        quick_scan
+                fi
 
                 if [ "$tcp_flag" != 0 ]
                 then
